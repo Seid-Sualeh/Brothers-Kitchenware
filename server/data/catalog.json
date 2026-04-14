@@ -1,0 +1,198 @@
+{
+  "categories": [
+    {
+      "id": 1,
+      "name": "Cookware",
+      "slug": "cookware",
+      "image_url": "https://images.unsplash.com/photo-1584990340444-9c1a6d8c0b8c?w=600&q=80"
+    },
+    {
+      "id": 2,
+      "name": "Dining Ware",
+      "slug": "dining",
+      "image_url": "https://images.unsplash.com/photo-1603199506016-b9a594b593c0?w=600&q=80"
+    },
+    {
+      "id": 3,
+      "name": "Gadgets",
+      "slug": "gadgets",
+      "image_url": "https://images.unsplash.com/photo-1556911220-bff31c812dba?w=600&q=80"
+    },
+    {
+      "id": 4,
+      "name": "Appliances",
+      "slug": "appliances",
+      "image_url": "https://images.unsplash.com/photo-1517668808823-f9f701c558b1?w=600&q=80"
+    },
+    {
+      "id": 5,
+      "name": "Cutlery",
+      "slug": "cutlery",
+      "image_url": "https://images.unsplash.com/photo-1593618998160-e34014e67546?w=600&q=80"
+    },
+    {
+      "id": 6,
+      "name": "Bakeware",
+      "slug": "bakeware",
+      "image_url": "https://images.unsplash.com/photo-1621939514649-280e2ee25f60?w=600&q=80"
+    },
+    {
+      "id": 7,
+      "name": "Storage",
+      "slug": "storage",
+      "image_url": "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=600&q=80"
+    },
+    {
+      "id": 8,
+      "name": "Coffee & Tea",
+      "slug": "coffee-tea",
+      "image_url": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&q=80"
+    }
+  ],
+  "products": [
+    {
+      "id": 101,
+      "name": "The Professional Baker's Kit",
+      "description": "Parchment, pans, and measuring tools curated for consistent bakes at home.",
+      "price": 35.99,
+      "image_url": "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=800&q=80",
+      "category_slug": "bakeware",
+      "is_best_seller": 0,
+      "is_featured": 1,
+      "rating": 4.8,
+      "review_count": 842
+    },
+    {
+      "id": 102,
+      "name": "Chef's Copper Core Set",
+      "description": "Five-ply construction for even heat from stovetop to oven.",
+      "price": 189.0,
+      "image_url": "https://images.unsplash.com/photo-1584990340444-9c1a6d8c0b8c?w=800&q=80",
+      "category_slug": "cookware",
+      "is_best_seller": 1,
+      "is_featured": 1,
+      "rating": 4.7,
+      "review_count": 1203
+    },
+    {
+      "id": 103,
+      "name": "Minimal Dining Bundle",
+      "description": "Stone-glaze plates and bowls for everyday meals and hosting.",
+      "price": 72.5,
+      "image_url": "https://images.unsplash.com/photo-1603199506016-b9a594b593c0?w=800&q=80",
+      "category_slug": "dining",
+      "is_best_seller": 0,
+      "is_featured": 1,
+      "rating": 4.6,
+      "review_count": 356
+    },
+    {
+      "id": 104,
+      "name": "Forged Steel Chef Knife",
+      "description": "Full-tang 8-inch blade with balanced bolster.",
+      "price": 15.99,
+      "image_url": "https://images.unsplash.com/photo-1593618998160-e34014e67546?w=800&q=80",
+      "category_slug": "cutlery",
+      "is_best_seller": 1,
+      "is_featured": 0,
+      "rating": 4.9,
+      "review_count": 4521
+    },
+    {
+      "id": 105,
+      "name": "Precision Mandoline Slicer",
+      "description": "Adjustable blades and hand guard for fast prep.",
+      "price": 42.0,
+      "image_url": "https://images.unsplash.com/photo-1556911220-bff31c812dba?w=800&q=80",
+      "category_slug": "gadgets",
+      "is_best_seller": 1,
+      "is_featured": 0,
+      "rating": 4.4,
+      "review_count": 910
+    },
+    {
+      "id": 106,
+      "name": "Programmable Glass Kettle",
+      "description": "Variable temperature presets for tea and pour-over coffee.",
+      "price": 59.99,
+      "image_url": "https://images.unsplash.com/photo-1517668808823-f9f701c558b1?w=800&q=80",
+      "category_slug": "appliances",
+      "is_best_seller": 1,
+      "is_featured": 0,
+      "rating": 4.5,
+      "review_count": 678
+    },
+    {
+      "id": 107,
+      "name": "Airtight Pantry Set (12pc)",
+      "description": "Stackable containers with snap lids for dry goods.",
+      "price": 28.75,
+      "image_url": "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=800&q=80",
+      "category_slug": "storage",
+      "is_best_seller": 1,
+      "is_featured": 0,
+      "rating": 4.3,
+      "review_count": 223
+    },
+    {
+      "id": 108,
+      "name": "Pour-Over Starter Kit",
+      "description": "Dripper, filters, and glass server for café-style brews.",
+      "price": 34.25,
+      "image_url": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800&q=80",
+      "category_slug": "coffee-tea",
+      "is_best_seller": 1,
+      "is_featured": 0,
+      "rating": 4.7,
+      "review_count": 1544
+    },
+    {
+      "id": 109,
+      "name": "Nonstick Skillet 10\"",
+      "description": "Induction-ready with ergonomic stay-cool handle.",
+      "price": 24.99,
+      "image_url": "https://images.unsplash.com/photo-1585672840418-2c8d4c0b0e0b?w=800&q=80",
+      "category_slug": "cookware",
+      "is_best_seller": 1,
+      "is_featured": 0,
+      "rating": 4.2,
+      "review_count": 88
+    },
+    {
+      "id": 110,
+      "name": "Silicone Utensil Caddy",
+      "description": "Heat-safe tools with stainless accents.",
+      "price": 19.5,
+      "image_url": "https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=800&q=80",
+      "category_slug": "gadgets",
+      "is_best_seller": 0,
+      "is_featured": 0,
+      "rating": 4.6,
+      "review_count": 412
+    },
+    {
+      "id": 111,
+      "name": "Stoneware Serving Platter",
+      "description": "Oven-to-table platter with speckled glaze.",
+      "price": 31.0,
+      "image_url": "https://images.unsplash.com/photo-1610701596007-115028617dc1?w=800&q=80",
+      "category_slug": "dining",
+      "is_best_seller": 0,
+      "is_featured": 0,
+      "rating": 4.5,
+      "review_count": 267
+    },
+    {
+      "id": 112,
+      "name": "Compact Food Processor",
+      "description": "3 cups, pulse control, dishwasher-safe bowl.",
+      "price": 49.99,
+      "image_url": "https://images.unsplash.com/photo-1570222094114-d054a817e2b4?w=800&q=80",
+      "category_slug": "appliances",
+      "is_best_seller": 0,
+      "is_featured": 0,
+      "rating": 4.1,
+      "review_count": 540
+    }
+  ]
+}

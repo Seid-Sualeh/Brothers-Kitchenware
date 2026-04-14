@@ -1,0 +1,179 @@
+{
+  "info": {
+    "name": "Brothers Kitchenware - Admin & Employee Setup",
+    "description": "Requests to set up admin/employee and test dashboard access",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Admin Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"admin@bk.com\",\n  \"password\": \"Admin123!\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5000/api/admin/auth/login",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "admin", "auth", "login"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "    const response = pm.response.json();",
+              "    pm.collectionVariables.set('admin_token', response.token);",
+              "    console.log('Admin token saved:', response.token);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Employee Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"employee@bk.com\",\n  \"password\": \"Employee123\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5000/api/admin/auth/login",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "admin", "auth", "login"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "    const response = pm.response.json();",
+              "    pm.collectionVariables.set('employee_token', response.token);",
+              "    console.log('Employee token saved:', response.token);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get Admin Dashboard Summary",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{admin_token}}"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:5000/api/admin/analytics/summary",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "admin", "analytics", "summary"]
+        }
+      }
+    },
+    {
+      "name": "Get Recent Sales (Admin)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{admin_token}}"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:5000/api/admin/dashboard/recent-sales",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "admin", "dashboard", "recent-sales"]
+        }
+      }
+    },
+    {
+      "name": "Get Top Products (Admin)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{admin_token}}"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:5000/api/admin/dashboard/top-products",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "admin", "dashboard", "top-products"]
+        }
+      }
+    },
+    {
+      "name": "Create Another Employee (Admin)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{admin_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"newemployee@bk.com\",\n  \"password\": \"NewEmp123\",\n  \"name\": \"New Employee\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5000/api/admin/employees",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "admin", "employees"]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "admin_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "employee_token",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}
