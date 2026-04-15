@@ -253,6 +253,9 @@ html {
   #mobileBtn {
     display: inline-flex !important;
   }
+  #toggleBtn {
+    display: none !important;
+  }
 }
 
 @media (min-width: 993px) {

@@ -1,17 +1,18 @@
 import React, { useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
-import { FiSearch, FiUser, FiShoppingCart, FiChevronDown } from "react-icons/fi";
+import { FiSearch, FiUser, FiShoppingCart, FiChevronDown, FiMenu, FiX } from "react-icons/fi";
 import { useCart } from "../../../context/CartContext";
 import { useAuth } from "../../../context/AuthContext";
 
 const navLinkClass = ({ isActive }) =>
   [
-    "uppercase text-[11px] tracking-[0.2em] font-bold transition-colors duration-200 border-b-2 pb-0.5 text-black",
+    "uppercase text-[16px] tracking-[0.2em] font-bold transition-colors duration-200 border-b-2 pb-0.5 text-black no-underline",
     isActive ? "border-[#8fbab5]" : "border-transparent hover:border-[#8fbab5]",
   ].join(" ");
 
 const Header = () => {
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { totalItems } = useCart();
   const { isLoggedIn, logout } = useAuth();
   const { pathname } = useLocation();
@@ -37,6 +38,15 @@ const Header = () => {
       >
         B<span className="text-[#2d6a6a]">K</span>
       </Link>
+
+      <button
+        type="button"
+        className="lg:hidden p-2 rounded-lg text-black hover:bg-black/[0.04] transition-colors"
+        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        aria-label="Toggle mobile menu"
+      >
+        {isMobileMenuOpen ? <FiX size={24} /> : <FiMenu size={24} />}
+      </button>
 
       <div className="hidden lg:flex items-center gap-8 xl:gap-10">
         <NavLink to="/" end className={navLinkClass}>
@@ -141,7 +151,30 @@ const Header = () => {
             {totalItems}
           </span>
         </Link>
+        
       </div>
+
+      {isMobileMenuOpen && (
+        <div className="lg:hidden absolute top-full left-0 right-0 bg-white border-b border-gray-200/90 shadow-lg z-40">
+          <div className="flex flex-col px-4 py-4 space-y-4">
+            <NavLink to="/" end className="text-black font-bold uppercase tracking-[0.2em] py-2" onClick={() => setIsMobileMenuOpen(false)}>
+              Home
+            </NavLink>
+            <NavLink to="/shop" end className="text-black font-bold uppercase tracking-[0.2em] py-2" onClick={() => setIsMobileMenuOpen(false)}>
+              Shop
+            </NavLink>
+            <NavLink to="/services" className="text-black font-bold uppercase tracking-[0.2em] py-2" onClick={() => setIsMobileMenuOpen(false)}>
+              Services
+            </NavLink>
+            <NavLink to="/about" className="text-black font-bold uppercase tracking-[0.2em] py-2" onClick={() => setIsMobileMenuOpen(false)}>
+              About
+            </NavLink>
+            <NavLink to="/contact" className="text-black font-bold uppercase tracking-[0.2em] py-2" onClick={() => setIsMobileMenuOpen(false)}>
+              Contact
+            </NavLink>
+          </div>
+        </div>
+      )}
     </nav>
   );
 };

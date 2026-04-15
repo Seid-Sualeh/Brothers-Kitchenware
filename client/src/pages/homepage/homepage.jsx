@@ -106,7 +106,7 @@ const Home = () => {
                   tile.
                 </p>
               </div>
-              <div className="max-w-screen-2xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-5 md:gap-8">
+              <div className="max-w-screen-2xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-5 md:gap-8">
                 {categoryGrid.map((cat) => (
                   <Link
                     key={cat.id}
@@ -229,7 +229,7 @@ const Home = () => {
                   See more
                 </Link>
               </div>
-              <div className="max-w-screen-2xl mx-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 md:gap-5">
+              <div className="max-w-screen-2xl mx-auto grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 gap-4 md:gap-5">
                 {moreProducts.map((p) => (
                   <ProductCard key={p.id} product={p} renderAdd />
                 ))}

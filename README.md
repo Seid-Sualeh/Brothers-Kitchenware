@@ -5,6 +5,7 @@ A full-stack e-commerce application for "Brothers Kitchenware," an online kitche
 ## 🚀 Features
 
 ### User-Facing Features
+
 - **Product Browsing**: Homepage with featured products, carousel, and category navigation
 - **Shop Page**: Filter products by categories, search functionality
 - **Product Details**: Detailed view with add-to-cart functionality
@@ -14,6 +15,7 @@ A full-stack e-commerce application for "Brothers Kitchenware," an online kitche
 - **Contact & Services**: Contact form submission and service information pages
 
 ### Admin Panel Features
+
 - **Dashboard**: Overview with sales reports and analytics
 - **Inventory Management**: View and manage product inventory
 - **Product Management**: Create new products with details and images
@@ -21,6 +23,7 @@ A full-stack e-commerce application for "Brothers Kitchenware," an online kitche
 - **Reports**: Sales and performance analytics
 
 ### Technical Features
+
 - **Responsive Design**: Mobile-first approach with Bootstrap and Material-UI
 - **Database Integration**: MySQL database with fallback to JSON data
 - **Authentication**: Secure JWT-based auth for users and admins
@@ -31,6 +34,7 @@ A full-stack e-commerce application for "Brothers Kitchenware," an online kitche
 ## 🛠 Tech Stack
 
 ### Frontend
+
 - **React 19**: Modern React with hooks and JSX
 - **Vite**: Fast build tool and development server
 - **Material-UI & Bootstrap**: UI components and styling
@@ -39,6 +43,7 @@ A full-stack e-commerce application for "Brothers Kitchenware," an online kitche
 - **TailwindCSS**: Utility-first CSS framework
 
 ### Backend
+
 - **Node.js & Express**: Server-side JavaScript runtime and web framework
 - **MySQL2**: Database driver with promise-based queries
 - **JWT**: JSON Web Tokens for authentication
@@ -54,12 +59,14 @@ A full-stack e-commerce application for "Brothers Kitchenware," an online kitche
 ## 🔧 Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone <repository-url>
    cd brothers-kitchenware
    ```
 
 2. **Backend Setup**
+
    ```bash
    cd server
    npm install
@@ -74,6 +81,7 @@ A full-stack e-commerce application for "Brothers Kitchenware," an online kitche
 ## ⚙️ Configuration
 
 ### Database Setup
+
 1. Create a MySQL database for the application
 2. Run the initial setup script:
    ```bash
@@ -81,6 +89,7 @@ A full-stack e-commerce application for "Brothers Kitchenware," an online kitche
    ```
 
 ### Environment Variables
+
 Create a `.env` file in the `server` directory with the following variables:
 
 ```env
@@ -96,12 +105,14 @@ USE_MEMORY=false  # Set to true to use JSON fallback instead of DB
 ## 🚀 Running the Application
 
 1. **Start the Backend Server**
+
    ```bash
    cd server
    npm run dev  # For development with nodemon
    # or
    npm start    # For production
    ```
+
    The server will run on http://localhost:5000
 
 2. **Start the Frontend**
@@ -114,6 +125,7 @@ USE_MEMORY=false  # Set to true to use JSON fallback instead of DB
 ## 📚 API Documentation
 
 ### Public Endpoints
+
 - `GET /health` - Health check
 - `GET /categories` - Get all product categories
 - `GET /products` - Get all products
@@ -122,10 +134,12 @@ USE_MEMORY=false  # Set to true to use JSON fallback instead of DB
 - `POST /contact` - Submit contact form
 
 ### Authentication Endpoints
+
 - `POST /login` - User login
 - `POST /signin` - User registration
 
 ### Admin Endpoints (Requires Admin Authentication)
+
 - `GET /admin/dashboard` - Admin dashboard data
 - `POST /admin/products` - Create new product
 - `POST /admin/employees` - Add new employee
@@ -160,7 +174,9 @@ brothers-kitchenware/
 ## 🔮 Future Enhancements
 
 ### Planned Features
+
 - **Payment Integration**: Stripe/PayPal integration for secure payments
+-by telebirr or mpesa
 - **Real-time Notifications**: WebSocket implementation for order updates
 - **Advanced Search**: Elasticsearch integration for better product search
 - **Wishlist**: User wishlist functionality
@@ -172,8 +188,15 @@ brothers-kitchenware/
 - **Email Notifications**: Order confirmations and marketing emails
 - **Social Login**: Google/Facebook authentication
 - **Progressive Web App**: PWA features for better mobile experience
+- **Order Tracking**: Real-time shipment status and delivery updates
+- **Discounts & Coupons**: Promo codes, seasonal deals, and bundle pricing
+- **Customer Support Chat**: Live chat or ticket-based support
+- **Related Products & Recommendations**: Personalized suggestions for shoppers
+- **Role-Based Admin Control**: Granular permissions for admin/employee users
+- **SEO Optimization**: Improved metadata, crawling, and search engine visibility
 
 ### Technical Improvements
+
 - **Testing**: Unit and integration tests with Jest
 - **CI/CD**: Automated deployment pipeline
 - **Docker**: Containerization for easier deployment
