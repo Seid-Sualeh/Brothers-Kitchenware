@@ -32,7 +32,17 @@ async function install() {
       await conn.query(queries[i]);
     } catch (err) {
       console.error("Error executing query:", err.message);
+      // Check if it's a duplicate column error (MySQL error code 1060)
+      if (
+        err.code === "ER_DUP_FIELDNAME" ||
+        err.message.includes("Duplicate column name")
+      ) {
+        console.log("Column already exists, continuing...");
+        continue;
+      }
+      // For other errors, set the error message
       finalMessage.message = "Not all tables are created";
+      finalMessage.error = err.message;
     }
   }
 
@@ -55,6 +65,7 @@ async function install() {
 
 async function populateFromCatalog() {
   const catalogPath = path.join(__dirname, "..", "..", "data", "catalog.json");
+  console.log("Looking for catalog at:", catalogPath);
   const catalogData = JSON.parse(fs.readFileSync(catalogPath, "utf-8"));
 
   // Insert categories
