@@ -38,7 +38,7 @@ const Home = () => {
             ? landingRes.data.bestSellers
             : [],
         });
-        const all = productsRes.data ?? [];
+        const all = Array.isArray(productsRes.data) ? productsRes.data : [];
         setMoreProducts(all.slice(0, 8));
       } catch (e) {
         console.error(e);
