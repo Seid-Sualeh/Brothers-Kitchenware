@@ -341,5 +341,13 @@ initDatabase().then(() => {
     res.sendFile(path.join(__dirname, "../client/dist/index.html"));
   });
 
+  server.on("error", (err) => {
+    if (err.code === "EADDRINUSE") {
+      console.error(`Port ${PORT} is already in use. Stop the other process or set PORT to a free port.`);
+      process.exit(1);
+    }
+    throw err;
+  });
+
   server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 });

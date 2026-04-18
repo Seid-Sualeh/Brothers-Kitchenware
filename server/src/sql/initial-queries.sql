@@ -170,40 +170,17 @@ INSERT INTO users (email, password_hash, name, role) VALUES
 ON DUPLICATE KEY UPDATE email = email;
 
 -- Categories: prepare, eat, store, appliances & electronics, plus bakeware and gadgets
-INSERT INTO categories (name, slug, image_url) VALUES
-('Cookware & Prep', 'cookware-prep', 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?w=600&q=80'),
-('Bakeware', 'bakeware', 'https://images.unsplash.com/photo-1628083282487-557f25112b61?w=600&q=80'),
-('Tableware & Dining', 'tableware-dining', 'https://images.unsplash.com/photo-1603199506016-b7a5480f98d4?w=600&q=80'),
-('Food Storage', 'food-storage', 'https://images.unsplash.com/photo-1584990349676-31a2b414fccf?w=600&q=80'),
-('Kitchen Appliances', 'kitchen-appliances', 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&q=80'),
-('Utensils & Gadgets', 'utensils-gadgets', 'https://images.unsplash.com/photo-1590794056226-79ef3a8147e1?w=600&q=80')
+INSERT INTO categories (id, name, slug, image_url) VALUES
+(1, 'Cookware & Prep', 'cookware-prep', 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?w=600&q=80'),
+(2, 'Bakeware', 'bakeware', 'https://images.unsplash.com/photo-1628083282487-557f25112b61?w=600&q=80'),
+(3, 'Tableware & Dining', 'tableware-dining', 'https://images.unsplash.com/photo-1603199506016-b7a5480f98d4?w=600&q=80'),
+(4, 'Food Storage', 'food-storage', 'https://images.unsplash.com/photo-1584990349676-31a2b414fccf?w=600&q=80'),
+(5, 'Kitchen Appliances', 'kitchen-appliances', 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&q=80'),
+(6, 'Utensils & Gadgets', 'utensils-gadgets', 'https://images.unsplash.com/photo-1590794056226-79ef3a8147e1?w=600&q=80'),
+(7, 'Electronics', 'electronics', 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&q=80'),
+(8, 'Coffee & Tea', 'coffee-tea', 'https://images.unsplash.com/photo-1541167760496-1628856ab772?w=600&q=80')
 ON DUPLICATE KEY UPDATE name = VALUES(name), image_url = VALUES(image_url);
 
 -- Product seed data (kitchen: cook, eat, store, large & small appliances)
-INSERT INTO products (
-  id, name, description, price, image_url, category_slug, stock_quantity,
-  is_best_seller, is_featured, average_rating, total_ratings
-) VALUES
-(101, 'Stainless Steel Cookware Set', 'Pots and pans for everyday cooking and meal prep.', 129.99, 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?w=800&q=80', 'cookware-prep', 40, 1, 1, 4.5, 128),
-(102, 'Chef Knife & Cutting Board Set', 'Sharp knives and a sturdy board for chopping and slicing.', 79.50, 'https://images.unsplash.com/photo-1590794056226-79ef3a8147e1?w=800&q=80', 'cookware-prep', 55, 0, 1, 4.2, 89),
-(103, 'Non-Stick Bakeware Bundle', 'Sheets and pans for baking breads, cakes, and casseroles.', 64.00, 'https://images.unsplash.com/photo-1628083282487-557f25112b61?w=800&q=80', 'bakeware', 48, 1, 0, 4.7, 156),
-(104, 'Ceramic Dinnerware (16-piece)', 'Plates and bowls for serving and enjoying meals at the table.', 89.99, 'https://images.unsplash.com/photo-1603199506016-b7a5480f98d4?w=800&q=80', 'tableware-dining', 35, 1, 1, 4.8, 203),
-(105, 'Stainless Flatware Set', 'Forks, knives, and spoons for dining.', 42.00, 'https://images.unsplash.com/photo-1607623488073-5b5d75cfc4d4?w=800&q=80', 'tableware-dining', 60, 0, 0),
-(106, 'Glass Food Storage Containers', 'Airtight lids — store leftovers and pantry staples safely.', 49.99, 'https://images.unsplash.com/photo-1584990349676-31a2b414fccf?w=800&q=80', 'food-storage', 70, 1, 0),
-(107, 'Dry Goods Canister Set', 'Keep flour, sugar, and pasta organized on the counter.', 36.00, 'https://images.unsplash.com/photo-1556911220-bff31c812dba?w=800&q=80', 'food-storage', 45, 0, 1),
-(108, 'French Door Refrigerator', 'Large capacity cooling for fresh ingredients.', 1899.00, 'https://images.unsplash.com/photo-1571175443880-49e1d25b2bc5?w=800&q=80', 'kitchen-appliances', 8, 1, 1),
-(109, 'Freestanding Gas Range', 'Oven and cooktop for preparing family meals.', 1499.00, 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&q=80', 'kitchen-appliances', 6, 1, 1),
-(110, 'Countertop Microwave', 'Quick reheating and defrosting.', 189.00, 'https://images.unsplash.com/photo-1585659722983-3a675dabf23d?w=800&q=80', 'kitchen-appliances', 22, 0, 0),
-(111, 'Electric Kettle', 'Boil water fast for tea, coffee, and cooking.', 39.99, 'https://images.unsplash.com/photo-1594223274512-ad4803739b7c?w=800&q=80', 'kitchen-appliances', 50, 1, 0),
-(112, 'Silicone Utensil Set', 'Spatulas and spoons safe for non-stick cookware.', 28.00, 'https://images.unsplash.com/photo-1590794056226-79ef3a8147e1?w=800&q=80', 'utensils-gadgets', 80, 0, 0)
-ON DUPLICATE KEY UPDATE
-name = VALUES(name),
-description = VALUES(description),
-price = VALUES(price),
-image_url = VALUES(image_url),
-category_slug = VALUES(category_slug),
-stock_quantity = VALUES(stock_quantity),
-is_best_seller = VALUES(is_best_seller),
-is_featured = VALUES(is_featured),
-average_rating = VALUES(average_rating),
-total_ratings = VALUES(total_ratings);
+-- Note: Products are now populated from catalog.json via the install service
+-- This section is kept for reference but not executed

@@ -43,6 +43,22 @@ Full-stack e-commerce app with React (`client`) and Express/MySQL (`server`) for
 - Socket.IO server
 - Nodemailer
 
+## 🚀 Deployment
+
+The application is configured for deployment on:
+
+- **Frontend**: Netlify
+- **Backend**: Vercel
+- **Database**: Clever Cloud MySQL
+
+See the [deployment guide](./deployment/README.md) for detailed instructions.
+
+### Quick Deploy
+
+1. Set up MySQL database on Clever Cloud
+2. Deploy backend to Vercel with database credentials
+3. Deploy frontend to Netlify with backend API URL
+
 ## Project Structure
 
 ```text
@@ -116,17 +132,27 @@ CARD_SIMULATED_URL=https://payments.example/checkout
 
 ## Database Initialization
 
-Run one of the following:
+The `/install` route automatically creates all tables and populates them with data from `catalog.json`.
 
-1. API installer route (recommended)
+### Option 1: API Installer (Recommended)
 
-- Start backend then open `GET /install` or call `POST /install`
+1. Start the backend server
+2. Open `GET /api/install` or call `POST /api/install` in your browser/API client
+3. This will:
+   - Create all database tables
+   - Insert categories from `catalog.json`
+   - Insert all products from `catalog.json`
+   - Create default admin/employee/customer accounts
 
-2. SQL directly
+### Option 2: Manual SQL
+
+If you prefer manual setup:
 
 ```bash
 mysql -u <user> -p <db_name> < server/src/sql/initial-queries.sql
 ```
+
+Note: This only creates tables. Products must be inserted separately.
 
 ## Run
 
