@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import Testimonials from "../../components/common/testimonials/testimonials.jsx";
 import Layout from "../../components/common/Layout/Layout.jsx";
 import CurrencyFormat from "../../components/CurrencyFormat/CurrencyFormat.jsx";
@@ -60,6 +61,18 @@ const Home = () => {
 
   return (
     <Layout>
+      <Helmet>
+        <title>Brother's Kitchenware - Premium Kitchen Products</title>
+        <meta
+          name="description"
+          content="Discover high-quality kitchenware at Brother's Kitchenware. Shop cookware, utensils, and more with fast shipping and great prices."
+        />
+        <meta
+          name="keywords"
+          content="kitchenware, cookware, utensils, kitchen products, Brother's Kitchenware"
+        />
+        <link rel="canonical" href="https://brothers-kitchenware.netlify.app" />
+      </Helmet>
       <section className="relative min-h-[78vh] flex items-center overflow-hidden bg-[#0f1720]">
         <CarouselEffect />
         <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/45 to-black/25" />
@@ -124,6 +137,10 @@ const Home = () => {
                         src={cat.image_url}
                         alt={cat.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        onError={(e) => {
+                          e.target.src =
+                            "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=300&h=300&fit=crop&crop=center";
+                        }}
                       />
                     </div>
                     <h3 className="font-bold text-gray-900 text-sm md:text-base">

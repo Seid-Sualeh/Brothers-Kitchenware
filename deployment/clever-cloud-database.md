@@ -30,6 +30,17 @@ After creation:
    - **Password**: `your-db-password`
    - **Port**: `3306`
 
+### 2.5. Configure Access Control
+
+**Important**: By default, Clever Cloud databases block external connections for security.
+
+1. In your database add-on dashboard, go to **"Access control"** tab
+2. Add IP addresses/ranges that should access the database:
+   - For **development/testing**: Add `0.0.0.0/0` (allows all IPs - use with caution)
+   - For **production**: Add specific IP ranges from your hosting provider
+
+**Security Note**: Allowing all IPs (0.0.0.0/0) is convenient for development but insecure for production. Use specific IP ranges when possible.
+
 ### 3. Database Migration
 
 You don't need to manually import data. The backend's `/api/install` route will automatically:

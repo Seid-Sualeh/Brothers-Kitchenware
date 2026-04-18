@@ -1,13 +1,17 @@
-/* Custom CSS to target these specific links */
+/* This targets the className you added to your Links */
 .category-nav-link {
-  text-decoration: none !important;
-  color: inherit !important;
+    text-decoration: none !important; /* Removes the underline */
+    color: white !important;         /* Forces white text */
+    border: none !important;         /* Ensures no border-bottom exists */
+    outline: none !important;        /* Removes focus rings */
+    box-shadow: none !important;     /* Removes any shadow lines */
 }
 
-/* Optional: Ensure they stay clean on hover/active/visited */
+/* Keeps it white and clean when hovering or clicking */
 .category-nav-link:hover, 
 .category-nav-link:active, 
-.category-nav-link:visited {
-  text-decoration: none !important;
-  color: inherit !important;
+.category-nav-link:focus {
+    text-decoration: none !important;
+    color: white !important;
+    background-color: rgba(255, 255, 255, 0.1); /* Matches your hover:bg-white/10 */
 }

@@ -65,7 +65,9 @@ const SignUp = () => {
       login(data.user, data.token);
       navigate("/");
     } catch (err) {
-      setError(err.response?.data?.error || "Registration failed. Please try again.");
+      setError(
+        err.response?.data?.error || "Registration failed. Please try again.",
+      );
     } finally {
       setLoading(false);
     }
@@ -150,7 +152,7 @@ const SignUp = () => {
                 <button
                   type="button"
                   onClick={() => setShowPassword((prev) => !prev)}
-                  className="btn btn-sm btn-outline-secondary position-absolute end-0 top-50 translate-middle-y me-2"
+                  className="btn btn-sm btn-outline-secondary rounded-3xl position-absolute end-0 top-50 translate-middle-y me-2"
                   aria-label={showPassword ? "Hide password" : "Show password"}
                   style={{ zIndex: 2 }}
                 >
@@ -195,16 +197,20 @@ const SignUp = () => {
               />
               <label className="form-check-label small" htmlFor="terms">
                 I agree to the{" "}
-                <a href="#" className="text-decoration-none">
+                <Link to="/terms-policy" className="text-decoration-none">
                   terms and privacy
-                </a>
+                </Link>
               </label>
               <div className="invalid-feedback">
                 You must agree before continuing.
               </div>
             </div>
 
-            <button className="btn btn-primary w-100" type="submit" disabled={loading}>
+            <button
+              className="btn btn-primary w-100 rounded-3xl"
+              type="submit"
+              disabled={loading}
+            >
               {loading ? "Creating account…" : "Sign up"}
             </button>
           </form>

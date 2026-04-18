@@ -1,0 +1,17 @@
+/* Remove default underlines from all links and buttons */
+a, button {
+  text-decoration: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Specifically target the Categories button to reset default borders */
+button[type="button"] {
+  border-style: solid; /* Required for Tailwind's border-b-2 to work correctly */
+  border-color: transparent; /* Start invisible */
+}
+
+/* Ensure NavLink active state doesn't trigger browser-default underlines */
+.active {
+  text-decoration: none !important;
+}

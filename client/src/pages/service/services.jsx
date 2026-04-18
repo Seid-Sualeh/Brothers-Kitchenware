@@ -88,12 +88,17 @@ const Services = () => {
               Comprehensive support for furnishing, organizing, and improving
               every space in your home.
             </p>
-            <Link
-              to="/shop"
-              className="inline-flex mt-8 md:mt-10 items-center justify-center rounded-full bg-[#9fd4cb] hover:bg-[#8bc9bf] px-10 py-3.5 text-sm font-bold uppercase tracking-widest text-gray-900 transition-colors shadow-lg"
-            >
-              Shop new arrivals
-            </Link>
+
+
+
+             <Link
+                          to="/shop"
+                          className="inline-flex mt-10 items-center justify-center rounded-full bg-[#5fb3a3] px-10 py-3.5 text-sm font-bold uppercase tracking-widest text-black no-underline hover:bg-[#4fa08f] transition-colors shadow-lg"
+                        >
+                          {" "}
+                          Shop new arrivals{" "}
+                        </Link>
+            
           </div>
         </div>
         <div className="absolute bottom-0 left-0 right-0 z-10 leading-none text-white pointer-events-none">

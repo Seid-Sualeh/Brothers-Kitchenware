@@ -5,6 +5,7 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
 import { CartProvider } from "./context/CartContext";
 import { AuthProvider } from "./context/AuthContext";
 import { AdminAuthProvider } from "./context/AdminAuthContext";
@@ -31,179 +32,196 @@ import Orders from "./pages/Orders/Orders";
 import Payment from "./pages/Payment/Payment";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import AdminProtectedRoute from "./components/ProtectedRoute/AdminProtectedRoute";
+import TermsPolicy from "./pages/terms-policy/TermsPolicy";
+import NotFound from "./pages/NotFound/NotFound";
+import ScrollToTop from "./components/common/ScrollToTop";
 
 const staffRoutes = ["admin", "employee"];
 
 function App() {
   return (
-    <Router>
-      <AuthProvider>
-        <AdminAuthProvider>
-          <SocketProvider>
-          <DataProvider>
-            <CartProvider>
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route
-                  path="/about"
-                  element={
-                    <>
-                      <Header />
-                      <About />
-                      <Footer />
-                    </>
-                  }
-                />
-                <Route
-                  path="/services"
-                  element={
-                    <>
-                      <Header />
-                      <Services />
-                      <Footer />
-                    </>
-                  }
-                />
-                <Route
-                  path="/contact"
-                  element={
-                    <>
-                      <Header />
-                      <Contact />
-                      <Footer />
-                    </>
-                  }
-                />
-                <Route
-                  path="/shop"
-                  element={
-                    <>
-                      <Header />
-                      <Shop />
-                      <Footer />
-                    </>
-                  }
-                />
-                <Route
-                  path="/category/:categoryName"
-                  element={
-                    <>
-                      <Header />
-                      <Shop />
-                      <Footer />
-                    </>
-                  }
-                />
-                <Route
-                  path="/cart"
-                  element={
-                    <>
-                      <Header />
-                      <Cart />
-                      <Footer />
-                    </>
-                  }
-                />
-                <Route path="/signin" element={<SignIn />} />
-                <Route path="/signup" element={<SignUp />} />
+    <HelmetProvider>
+      <Router>
+        <ScrollToTop />
+        <AuthProvider>
+          <AdminAuthProvider>
+            <SocketProvider>
+              <DataProvider>
+                <CartProvider>
+                  <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route
+                      path="/about"
+                      element={
+                        <>
+                          <Header />
+                          <About />
+                          <Footer />
+                        </>
+                      }
+                    />
+                    <Route
+                      path="/services"
+                      element={
+                        <>
+                          <Header />
+                          <Services />
+                          <Footer />
+                        </>
+                      }
+                    />
+                    <Route
+                      path="/contact"
+                      element={
+                        <>
+                          <Header />
+                          <Contact />
+                          <Footer />
+                        </>
+                      }
+                    />
+                    <Route
+                      path="/shop"
+                      element={
+                        <>
+                          <Header />
+                          <Shop />
+                          <Footer />
+                        </>
+                      }
+                    />
+                    <Route
+                      path="/category/:categoryName"
+                      element={
+                        <>
+                          <Header />
+                          <Shop />
+                          <Footer />
+                        </>
+                      }
+                    />
+                    <Route
+                      path="/cart"
+                      element={
+                        <>
+                          <Header />
+                          <Cart />
+                          <Footer />
+                        </>
+                      }
+                    />
+                    <Route path="/signin" element={<SignIn />} />
+                    <Route path="/signup" element={<SignUp />} />
 
-                <Route path="/admin/signin" element={<AdminSignIn />} />
-                <Route
-                  path="/admin"
-                  element={<Navigate to="/admin/dashboard" replace />}
-                />
-                <Route
-                  path="/admin/dashboard"
-                  element={
-                    <AdminProtectedRoute roles={["admin"]}>
-                      <Dashboard />
-                    </AdminProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/admin/inventory"
-                  element={
-                    <AdminProtectedRoute roles={staffRoutes}>
-                      <Inventory />
-                    </AdminProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/admin/create-product"
-                  element={
-                    <AdminProtectedRoute roles={staffRoutes}>
-                      <CreateProduct />
-                    </AdminProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/admin/edit-product/:id"
-                  element={
-                    <AdminProtectedRoute roles={staffRoutes}>
-                      <CreateProduct />
-                    </AdminProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/admin/reports"
-                  element={
-                    <AdminProtectedRoute roles={staffRoutes}>
-                      <Reports />
-                    </AdminProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/admin/add-employee"
-                  element={
-                    <AdminProtectedRoute roles={["admin"]}>
-                      <AddEmployee />
-                    </AdminProtectedRoute>
-                  }
-                />
+                    <Route path="/admin/signin" element={<AdminSignIn />} />
+                    <Route
+                      path="/admin"
+                      element={<Navigate to="/admin/dashboard" replace />}
+                    />
+                    <Route
+                      path="/admin/dashboard"
+                      element={
+                        <AdminProtectedRoute roles={["admin"]}>
+                          <Dashboard />
+                        </AdminProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/admin/inventory"
+                      element={
+                        <AdminProtectedRoute roles={staffRoutes}>
+                          <Inventory />
+                        </AdminProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/admin/create-product"
+                      element={
+                        <AdminProtectedRoute roles={staffRoutes}>
+                          <CreateProduct />
+                        </AdminProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/admin/edit-product/:id"
+                      element={
+                        <AdminProtectedRoute roles={staffRoutes}>
+                          <CreateProduct />
+                        </AdminProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/admin/reports"
+                      element={
+                        <AdminProtectedRoute roles={staffRoutes}>
+                          <Reports />
+                        </AdminProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/admin/add-employee"
+                      element={
+                        <AdminProtectedRoute roles={["admin"]}>
+                          <AddEmployee />
+                        </AdminProtectedRoute>
+                      }
+                    />
 
-                <Route
-                  path="/products/:productId"
-                  element={
-                    <>
-                      <Header />
-                      <ProductDetail />
-                      <Footer />
-                    </>
-                  }
-                />
-                <Route
-                  path="/orders"
-                  element={
-                    <ProtectedRoute
-                      msg="You must login to see your orders"
-                      redirect="/orders"
-                    >
-                      <Header />
-                      <Orders />
-                      <Footer />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/payment"
-                  element={
-                    <ProtectedRoute
-                      msg="You must login to pay first"
-                      redirect="/payment"
-                    >
-                      <Header />
-                      <Payment />
-                      <Footer />
-                    </ProtectedRoute>
-                  }
-                />
-              </Routes>
-            </CartProvider>
-          </DataProvider>
-          </SocketProvider>
-        </AdminAuthProvider>
-      </AuthProvider>
-    </Router>
+                    <Route
+                      path="/products/:productId"
+                      element={
+                        <>
+                          <Header />
+                          <ProductDetail />
+                          <Footer />
+                        </>
+                      }
+                    />
+                    <Route
+                      path="/orders"
+                      element={
+                        <ProtectedRoute
+                          msg="You must login to see your orders"
+                          redirect="/orders"
+                        >
+                          <Header />
+                          <Orders />
+                          <Footer />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/payment"
+                      element={
+                        <ProtectedRoute
+                          msg="You must login to pay first"
+                          redirect="/payment"
+                        >
+                          <Header />
+                          <Payment />
+                          <Footer />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/terms-policy"
+                      element={
+                        <>
+                          <Header />
+                          <TermsPolicy />
+                          <Footer />
+                        </>
+                      }
+                    />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </CartProvider>
+              </DataProvider>
+            </SocketProvider>
+          </AdminAuthProvider>
+        </AuthProvider>
+      </Router>
+    </HelmetProvider>
   );
 }
 

@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { FiPhone, FiMail, FiClock } from "react-icons/fi";
+import { Helmet } from "react-helmet-async";
 import { api } from "../../lib/api.js";
 
 const MAP_EMBED_ADDIS =
-  "https://maps.google.com/maps?q=Addis+Ababa,+Ethiopia&hl=en&z=12&ie=UTF8&iwloc=&output=embed";
+  "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31307.19098838402!2d39.043316614055314!3d11.232040336625916!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1646f42f81fd2757%3A0x92d3818696152876!2sMasha%20Wollo!5e0!3m2!1sen!2set!4v1776537242747!5m2!1sen!2set";
 
 const PANEL_BG = "#dcece9";
 const ACCENT = "#8fbab5";
@@ -24,7 +25,11 @@ const Contact = () => {
     orderNumber: "",
     message: "",
   });
-  const [status, setStatus] = useState({ sending: false, error: null, ok: false });
+  const [status, setStatus] = useState({
+    sending: false,
+    error: null,
+    ok: false,
+  });
 
   const send = async (e) => {
     e.preventDefault();
@@ -44,7 +49,9 @@ const Contact = () => {
     } catch (err) {
       setStatus({
         sending: false,
-        error: err?.response?.data?.error || "Something went wrong. Please try again.",
+        error:
+          err?.response?.data?.error ||
+          "Something went wrong. Please try again.",
         ok: false,
       });
     }
@@ -52,6 +59,21 @@ const Contact = () => {
 
   return (
     <div className="min-h-screen bg-[#F5F5F5] font-about">
+      <Helmet>
+        <title>Contact Us - Brother's Kitchenware</title>
+        <meta
+          name="description"
+          content="Get in touch with Brother's Kitchenware. Find our location, contact information, and send us a message."
+        />
+        <meta
+          name="keywords"
+          content="contact, Brother's Kitchenware, customer service, location"
+        />
+        <link
+          rel="canonical"
+          href="https://brothers-kitchenware.netlify.app/contact"
+        />
+      </Helmet>
       <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-10 py-10 md:py-14 lg:py-16">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 lg:min-h-[640px] overflow-hidden rounded-2xl lg:rounded-3xl border border-black/[0.06] bg-white shadow-[0_12px_40px_-20px_rgba(0,0,0,0.12)]">
           {/* Left: map */}
@@ -79,20 +101,30 @@ const Contact = () => {
           </div>
 
           {/* Right: info + form */}
-          <div className="flex flex-col p-6 sm:p-8 lg:p-10 lg:pl-12" style={{ backgroundColor: PANEL_BG }}>
+          <div
+            className="flex flex-col p-6 sm:p-8 lg:p-10 lg:pl-12"
+            style={{ backgroundColor: PANEL_BG }}
+          >
             <div className="mb-8 md:mb-10 space-y-6">
               <div className="flex gap-4">
                 <div
                   className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-black/[0.06] bg-white/90"
                   aria-hidden
                 >
-                  <FiPhone size={18} strokeWidth={2} style={{ color: ACCENT }} />
+                  <FiPhone
+                    size={18}
+                    strokeWidth={2}
+                    style={{ color: ACCENT }}
+                  />
                 </div>
                 <div>
                   <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-neutral-800">
                     Call now:
                   </p>
-                  <a href="tel:+18234557790" className="text-base font-semibold text-black hover:opacity-70">
+                  <a
+                    href="tel:+18234557790"
+                    className="text-base font-semibold text-black hover:opacity-70"
+                  >
                     +1 823 455-7790
                   </a>
                 </div>
@@ -121,13 +153,19 @@ const Contact = () => {
                   className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-black/[0.06] bg-white/90"
                   aria-hidden
                 >
-                  <FiClock size={18} strokeWidth={2} style={{ color: ACCENT }} />
+                  <FiClock
+                    size={18}
+                    strokeWidth={2}
+                    style={{ color: ACCENT }}
+                  />
                 </div>
                 <div>
                   <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-neutral-800">
                     Opening hours:
                   </p>
-                  <p className="text-base font-semibold text-black">Mon–Sat, 9AM–7PM</p>
+                  <p className="text-base font-semibold text-black">
+                    Mon–Sat, 9AM–7PM
+                  </p>
                 </div>
               </div>
             </div>
@@ -144,7 +182,9 @@ const Contact = () => {
                   autoComplete="name"
                   className="w-full rounded-lg border border-neutral-300 bg-white px-4 py-3 text-sm text-neutral-900 outline-none transition-shadow focus:border-[#8fbab5] focus:ring-2 focus:ring-[#8fbab5]/25"
                   value={form.name}
-                  onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, name: e.target.value }))
+                  }
                   required
                 />
               </div>
@@ -156,18 +196,24 @@ const Contact = () => {
                   autoComplete="email"
                   className="w-full rounded-lg border border-neutral-300 bg-white px-4 py-3 text-sm text-neutral-900 outline-none transition-shadow focus:border-[#8fbab5] focus:ring-2 focus:ring-[#8fbab5]/25"
                   value={form.email}
-                  onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, email: e.target.value }))
+                  }
                   required
                 />
               </div>
               <div>
-                <FieldLabel htmlFor="contact-order">Order number (optional)</FieldLabel>
+                <FieldLabel htmlFor="contact-order">
+                  Order number (optional)
+                </FieldLabel>
                 <input
                   id="contact-order"
                   type="text"
                   className="w-full rounded-lg border border-neutral-300 bg-white px-4 py-3 text-sm text-neutral-900 outline-none transition-shadow focus:border-[#8fbab5] focus:ring-2 focus:ring-[#8fbab5]/25"
                   value={form.orderNumber}
-                  onChange={(e) => setForm((f) => ({ ...f, orderNumber: e.target.value }))}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, orderNumber: e.target.value }))
+                  }
                   placeholder=""
                 />
               </div>
@@ -179,7 +225,9 @@ const Contact = () => {
                     rows={6}
                     className="h-full min-h-[160px] w-full resize-y rounded-lg border border-neutral-300 bg-white px-4 py-3 pb-12 text-sm text-neutral-900 outline-none transition-shadow focus:border-[#8fbab5] focus:ring-2 focus:ring-[#8fbab5]/25"
                     value={form.message}
-                    onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
+                    onChange={(e) =>
+                      setForm((f) => ({ ...f, message: e.target.value }))
+                    }
                     required
                   />
                   <span

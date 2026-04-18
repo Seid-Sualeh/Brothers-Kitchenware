@@ -1,0 +1,18 @@
+/* Remove default browser link colors and underlines */
+footer a, 
+footer a:visited, 
+footer a:active {
+  color: inherit !important;
+  text-decoration: none !important;
+}
+
+/* Specific hover effect to match your footer's text-white transition */
+footer a:hover {
+  color: white !important;
+}
+
+/* Reduce Title Size (Tailwind text-xs is 12px, this makes it 10px) */
+footer h4 {
+  font-size: 15px !important;
+  letter-spacing: 0.15em !important; /* Slightly more spacing for tiny text readability */
+}

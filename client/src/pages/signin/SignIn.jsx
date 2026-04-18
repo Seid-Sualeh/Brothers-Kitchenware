@@ -44,7 +44,8 @@ const SignIn = () => {
       const to = location.state?.redirect || "/";
       navigate(to, { replace: true });
     } catch (err) {
-      const msg = err.response?.data?.error || "Invalid credentials. Please try again.";
+      const msg =
+        err.response?.data?.error || "Invalid credentials. Please try again.";
       setError(msg);
     } finally {
       setIsLoading(false);
@@ -103,11 +104,15 @@ const SignIn = () => {
                 />
                 <button
                   type="button"
-                  className="btn btn-outline-secondary"
+                  className="btn btn-outline-secondary rounded-3xl"
                   onClick={() => setShowPassword(!showPassword)}
                   aria-label="Toggle password visibility"
                 >
-                  {showPassword ? <IconEyeOff size={18} /> : <IconEye size={18} />}
+                  {showPassword ? (
+                    <IconEyeOff size={18} />
+                  ) : (
+                    <IconEye size={18} />
+                  )}
                 </button>
               </div>
             </div>
@@ -124,10 +129,22 @@ const SignIn = () => {
                 Remember me
               </label>
             </div>
-            <button type="submit" className="btn btn-dark w-100 py-2" disabled={isLoading}>
+            <button
+              type="submit"
+              className="btn btn-dark w-100 py-2 rounded-3xl"
+              disabled={isLoading}
+            >
               {isLoading ? "Signing in…" : "Sign in"}
             </button>
           </form>
+          <div className="text-center mt-3">
+            <Link
+              to="/terms-policy"
+              className="btn btn-outline-secondary rounded-3xl w-100 py-2"
+            >
+              Terms & policy
+            </Link>
+          </div>
           <p className="text-center text-muted mt-4 mb-0 small">
             Staff? <Link to="/admin/signin">Admin / employee sign in</Link>
           </p>

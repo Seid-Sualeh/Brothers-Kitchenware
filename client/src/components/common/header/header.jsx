@@ -1,6 +1,14 @@
 import React, { useState } from "react";
+import './header.css'
 import { Link, NavLink, useLocation } from "react-router-dom";
-import { FiSearch, FiUser, FiShoppingCart, FiChevronDown, FiMenu, FiX } from "react-icons/fi";
+import {
+  FiSearch,
+  FiUser,
+  FiShoppingCart,
+  FiChevronDown,
+  FiMenu,
+  FiX,
+} from "react-icons/fi";
 import { useCart } from "../../../context/CartContext";
 import { useAuth } from "../../../context/AuthContext";
 import { STORE_CATEGORIES } from "../../../constants/storeCategories.js";
@@ -15,7 +23,7 @@ const Header = () => {
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { totalItems } = useCart();
-  const { isLoggedIn, logout } = useAuth();
+  const { user, isLoggedIn, logout } = useAuth();
   const { pathname } = useLocation();
   const categorySectionActive = pathname.startsWith("/category");
 
@@ -111,6 +119,8 @@ const Header = () => {
         </NavLink>
       </div>
 
+     
+
       <div className="flex items-center gap-4 md:gap-6 text-black">
         <button
           type="button"
@@ -120,13 +130,18 @@ const Header = () => {
           <FiSearch size={20} strokeWidth={2} />
         </button>
         {isLoggedIn ? (
-          <button
-            type="button"
-            onClick={logout}
-            className="text-xs md:text-sm font-semibold text-black px-2 py-1 rounded-lg hover:bg-black/[0.04] transition-colors"
-          >
-            Logout
-          </button>
+          <div className="flex items-center gap-2">
+            <span className="text-xs md:text-sm font-semibold text-black">
+              {user?.name || "User"}
+            </span>
+            <button
+              type="button"
+              onClick={logout}
+              className="text-xs md:text-sm font-semibold text-black px-2 py-1 rounded-lg hover:bg-black/[0.04] transition-colors"
+            >
+              Logout
+            </button>
+          </div>
         ) : (
           <Link
             to="/signin"
@@ -146,25 +161,46 @@ const Header = () => {
             {totalItems}
           </span>
         </Link>
-        
       </div>
 
       {isMobileMenuOpen && (
         <div className="lg:hidden absolute top-full left-0 right-0 bg-white border-b border-gray-200/90 shadow-lg z-40">
           <div className="flex flex-col px-4 py-4 space-y-4">
-            <NavLink to="/" end className="text-black font-bold uppercase tracking-[0.2em] py-2" onClick={() => setIsMobileMenuOpen(false)}>
+            <NavLink
+              to="/"
+              end
+              className="text-black font-bold uppercase tracking-[0.2em] py-2"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
               Home
             </NavLink>
-            <NavLink to="/shop" end className="text-black font-bold uppercase tracking-[0.2em] py-2" onClick={() => setIsMobileMenuOpen(false)}>
+            <NavLink
+              to="/shop"
+              end
+              className="text-black font-bold uppercase tracking-[0.2em] py-2"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
               Shop
             </NavLink>
-            <NavLink to="/services" className="text-black font-bold uppercase tracking-[0.2em] py-2" onClick={() => setIsMobileMenuOpen(false)}>
+            <NavLink
+              to="/services"
+              className="text-black font-bold uppercase tracking-[0.2em] py-2"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
               Services
             </NavLink>
-            <NavLink to="/about" className="text-black font-bold uppercase tracking-[0.2em] py-2" onClick={() => setIsMobileMenuOpen(false)}>
+            <NavLink
+              to="/about"
+              className="text-black font-bold uppercase tracking-[0.2em] py-2"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
               About
             </NavLink>
-            <NavLink to="/contact" className="text-black font-bold uppercase tracking-[0.2em] py-2" onClick={() => setIsMobileMenuOpen(false)}>
+            <NavLink
+              to="/contact"
+              className="text-black font-bold uppercase tracking-[0.2em] py-2"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
               Contact
             </NavLink>
           </div>

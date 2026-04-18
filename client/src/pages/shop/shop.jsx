@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { api } from "../../lib/api.js";
 import ProductCard from "../../components/product/ProductCard.jsx";
 import Loader from "../../components/Loader/Loader";
@@ -45,28 +46,42 @@ const Shop = () => {
 
   return (
     <div className="bg-white min-h-screen">
+      <Helmet>
+        <title>Shop Kitchenware - Brother's Kitchenware</title>
+        <meta
+          name="description"
+          content="Browse our collection of premium kitchenware. Find cookware, utensils, and kitchen essentials at Brother's Kitchenware."
+        />
+        <meta
+          name="keywords"
+          content="shop, kitchenware, products, Brother's Kitchenware"
+        />
+        <link
+          rel="canonical"
+          href="https://brothers-kitchenware.netlify.app/shop"
+        />
+      </Helmet>
       <header
-        className="py-12 md:py-16 border-b border-gray-100 px-6 md:px-10"
+        className="relative py-12 md:py-16 border-b border-gray-100 px-6 md:px-10 min-h-[400px] flex items-center overflow-hidden"
         style={{
           backgroundImage: `url(${img7})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
       >
-        <div className="max-w-screen-2xl mx-auto">
+        <div className="max-w-screen-2xl ">
           <h1 className="font-display text-3xl md:text-4xl font-bold text-gray-900 capitalize">
             {title}
           </h1>
           <div className="text-white/70 mt-2 text-sm font-medium flex items-center">
-           
             <Link
               to="/"
-              className="text-gray/50 hover:text-white no-underline transition-colors ml-1"
+              className="!text-gray/50 hover:text-white no-underline transition-colors ml-1"
             >
               Home
             </Link>
             <span className="mx-2 text-black/50">/</span>
-            <span className="text-black">Shop</span>
+            <span className="!text-black">Shop</span>
             {categoryName && (
               <>
                 <span className="mx-2 text-white/50">/</span>
@@ -74,6 +89,18 @@ const Shop = () => {
               </>
             )}
           </div>
+        </div>
+        <div className="absolute bottom-0 left-0 right-0 z-10 leading-none text-white">
+          <svg
+            viewBox="0 0 1440 120"
+            className="w-full h-16 md:h-24 block"
+            preserveAspectRatio="none"
+          >
+            <path
+              fill="currentColor"
+              d="M0,64L80,69.3C160,75,320,85,480,80C640,75,800,53,960,48C1120,43,1280,53,1360,58.7L1440,64L1440,120L1360,120C1280,120,1120,120,960,120C800,120,640,120,480,120C320,120,160,120,80,120L0,120Z"
+            />
+          </svg>
         </div>
       </header>
 
@@ -91,6 +118,8 @@ const Shop = () => {
               <option value="newest">Newest first</option>
               <option value="price-low">Price: Low to high</option>
               <option value="price-high">Price: High to low</option>
+              <option value="best-selling">Best Selling</option>
+              <option value="new-arrivals">New Arrivals</option>
             </select>
           </div>
           <div className="text-sm text-gray-600 leading-relaxed">
