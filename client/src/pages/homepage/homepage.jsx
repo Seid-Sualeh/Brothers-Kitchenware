@@ -28,9 +28,15 @@ const Home = () => {
         ]);
         if (cancelled) return;
         setData({
-          categories: landingRes.data.categories ?? [],
-          featured: landingRes.data.featured ?? [],
-          bestSellers: landingRes.data.bestSellers ?? [],
+          categories: Array.isArray(landingRes.data.categories)
+            ? landingRes.data.categories
+            : [],
+          featured: Array.isArray(landingRes.data.featured)
+            ? landingRes.data.featured
+            : [],
+          bestSellers: Array.isArray(landingRes.data.bestSellers)
+            ? landingRes.data.bestSellers
+            : [],
         });
         const all = productsRes.data ?? [];
         setMoreProducts(all.slice(0, 8));
@@ -63,7 +69,8 @@ const Home = () => {
               Everything to cook, serve, and store.
             </h1>
             <p className="mt-5 text-lg text-white/85 font-light">
-              Cookware, tableware, food storage, and kitchen appliances — including fridges, ranges, and more.
+              Cookware, tableware, food storage, and kitchen appliances —
+              including fridges, ranges, and more.
             </p>
             <Link
               to="/shop"
@@ -101,7 +108,8 @@ const Home = () => {
                   Shop by category
                 </h2>
                 <p className="mt-3 text-gray-500 max-w-2xl mx-auto text-sm md:text-base">
-                  Jump straight into prep, dining, pantry storage, or major appliances — organized like a specialty kitchen store.
+                  Jump straight into prep, dining, pantry storage, or major
+                  appliances — organized like a specialty kitchen store.
                 </p>
               </div>
               <div className="max-w-screen-2xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-5 md:gap-8">
@@ -136,7 +144,8 @@ const Home = () => {
                     Featured collections
                   </h2>
                   <p className="text-gray-500 text-sm mt-2">
-                    Editor picks across home essentials, organization, and decor.
+                    Editor picks across home essentials, organization, and
+                    decor.
                   </p>
                 </div>
                 <Link
