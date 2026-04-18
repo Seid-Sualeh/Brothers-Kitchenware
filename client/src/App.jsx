@@ -8,6 +8,7 @@ import {
 import { CartProvider } from "./context/CartContext";
 import { AuthProvider } from "./context/AuthContext";
 import { AdminAuthProvider } from "./context/AdminAuthContext";
+import { SocketProvider } from "./context/SocketContext";
 import { DataProvider } from "./components/DataProvider/DataProvider";
 import Header from "./components/common/header/header.jsx";
 import Footer from "./components/common/footer/footer.jsx";
@@ -38,6 +39,7 @@ function App() {
     <Router>
       <AuthProvider>
         <AdminAuthProvider>
+          <SocketProvider>
           <DataProvider>
             <CartProvider>
               <Routes>
@@ -198,6 +200,7 @@ function App() {
               </Routes>
             </CartProvider>
           </DataProvider>
+          </SocketProvider>
         </AdminAuthProvider>
       </AuthProvider>
     </Router>

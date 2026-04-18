@@ -143,8 +143,6 @@ const Inventory = () => {
                       <th>Category</th>
                       <th>Price</th>
                       <th>Stock</th>
-                      <th>Rating</th>
-                      <th>Reviews</th>
                       <th>Best Seller</th>
                       <th>Featured</th>
                       <th>Action</th>
@@ -154,7 +152,7 @@ const Inventory = () => {
                     {error ? (
                       <tr>
                         <td
-                          colSpan="11"
+                          colSpan="9"
                           className="text-center text-danger py-4"
                         >
                           {error}
@@ -162,7 +160,7 @@ const Inventory = () => {
                       </tr>
                     ) : filteredProducts.length === 0 ? (
                       <tr>
-                        <td colSpan="11" className="text-center py-4">
+                        <td colSpan="9" className="text-center py-4">
                           No products found.
                         </td>
                       </tr>
@@ -189,8 +187,6 @@ const Inventory = () => {
                           <td>{formatCategory(product.category_slug)}</td>
                           <td>{formatPrice(product.price)}</td>
                           <td>{product.stock_quantity ?? 0}</td>
-                          <td>{product.rating ?? "-"}</td>
-                          <td>{product.review_count ?? 0}</td>
                           <td>{product.is_best_seller ? "Yes" : "No"}</td>
                           <td>{product.is_featured ? "Yes" : "No"}</td>
                           <td>
@@ -222,7 +218,7 @@ const Inventory = () => {
                         {Math.min(endIndex, filteredProducts.length)} of{" "}
                         {filteredProducts.length} products
                       </td>
-                      <td colSpan="10" className="border-bottom-0">
+                      <td colSpan="8" className="border-bottom-0">
                         <nav
                           aria-label="Page navigation"
                           className="d-flex justify-content-end"

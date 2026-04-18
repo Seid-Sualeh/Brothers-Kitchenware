@@ -19,21 +19,21 @@ const WOOD_BG =
 const STORY_ROWS = [
   {
     title: "Craftsmanship & quality",
-    body: "Every BK piece is chosen for balance, edge retention, and materials that age gracefully in a real kitchen. We work with makers who treat cookware as functional art—so your prep feels steady, precise, and quietly luxurious.",
+    body: "Every BK item is chosen for real kitchens: durable materials, sensible sizes, and tools that hold up to daily cooking, serving, and storage.",
     image: IMG_CRAFT,
-    imageAlt: "Professional knives on a wooden cutting board",
+    imageAlt: "Stylish home products arranged on wooden shelves",
   },
   {
-    title: "Designed for home chefs",
-    body: "From weeknight sautés to weekend gatherings, our assortment is curated so you can plate with confidence. Clean silhouettes, honest finishes, and details you notice every time you reach for the same pan or fork.",
+    title: "Designed for modern homes",
+    body: "From relaxing bedrooms to productive home offices and organized kitchens, our assortment is curated to support the way people really live. Clean silhouettes, reliable function, and thoughtful details shape every category we carry.",
     image: IMG_DINING,
-    imageAlt: "Dining table set with plates, glassware, and candles",
+    imageAlt: "Well-designed dining and living space",
   },
   {
     title: "Our mission: inspiration",
-    body: "We exist to make the heart of your home calmer and more creative. That means thoughtful guidance, dependable quality, and a brand voice that celebrates home cooking—whether you are feeding one or a full table.",
+    body: "We exist to make every part of your home calmer, more functional, and more welcoming. That means thoughtful guidance, dependable quality, and a product mix that supports everyday routines across every room.",
     image: IMG_MISSION,
-    imageAlt: "Chefs collaborating in a bright kitchen",
+    imageAlt: "Bright and organized home interior",
   },
 ];
 
@@ -87,12 +87,12 @@ const About = () => {
               <h1 className="text-white text-2xl sm:text-3xl md:text-4xl font-bold uppercase tracking-[0.12em] leading-tight">
                 Our story.
                 <br />
-                Your kitchen.
+                Your home.
               </h1>
             </div>
             <p className="mt-6 md:mt-8 max-w-xl text-[15px] md:text-base font-medium leading-relaxed text-black bg-[#F9F9F7]/95 backdrop-blur-sm px-5 py-4 md:px-6 md:py-5 rounded-lg shadow-sm border border-black/[0.06]">
-              Welcome to a passion for cooking, minimalist design, and quality
-              tools for the heart of your home.
+              Welcome to a store built around better living spaces, dependable
+              essentials, and thoughtful design for the whole home.
             </p>
           </div>
         </div>

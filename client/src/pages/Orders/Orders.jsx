@@ -5,6 +5,13 @@ import { api } from "../../lib/api.js";
 import style from "./Orders.module.css";
 
 const money = (n) => `$${Number(n).toFixed(2)}`;
+const formatPaymentMethod = (method) => {
+  const normalized = String(method || "").toLowerCase();
+  if (normalized === "cash") return "Simple Checkout";
+  if (normalized === "mpesa") return "M-Pesa";
+  if (normalized === "telebirr") return "Telebirr";
+  return method || "Payment";
+};
 
 const Orders = () => {
   const { user } = useAuth();
@@ -80,6 +87,9 @@ const Orders = () => {
               </div>
               <p className="small text-muted mb-2">
                 {new Date(order.created_at).toLocaleString()} · Total {money(order.total_amount)}
+              </p>
+              <p className="small text-muted mb-2">
+                Payment: {formatPaymentMethod(order.payment_method)}
               </p>
               <ul className="list-unstyled small mb-0">
                 {(order.items || []).map((line) => (

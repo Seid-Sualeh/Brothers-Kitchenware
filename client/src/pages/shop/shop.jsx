@@ -4,7 +4,8 @@ import { api } from "../../lib/api.js";
 import ProductCard from "../../components/product/ProductCard.jsx";
 import Loader from "../../components/Loader/Loader";
 import img7 from "../../asset/images/3.jpg";
-import { FiChevronRight } from "react-icons/fi"; 
+import { FiChevronRight } from "react-icons/fi";
+
 const Shop = () => {
   const { categoryName } = useParams();
   const [products, setProducts] = useState([]);
@@ -18,6 +19,7 @@ const Shop = () => {
         const res = await api.get("/api/products", {
           params: categoryName ? { category: categoryName } : {},
         });
+
         let fetchedProducts = Array.isArray(res.data) ? [...res.data] : [];
 
         if (sortBy === "price-low") {
@@ -34,7 +36,6 @@ const Shop = () => {
         setLoading(false);
       }
     };
-
     fetchProducts();
   }, [categoryName, sortBy]);
 
@@ -44,30 +45,35 @@ const Shop = () => {
 
   return (
     <div className="bg-white min-h-screen">
-      <header className="py-12 md:py-16 border-b border-gray-100 px-6 md:px-10" style={{ backgroundImage: `url(${img7})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
-        <div className="max-w-screen-2xl mx-auto ">
+      <header
+        className="py-12 md:py-16 border-b border-gray-100 px-6 md:px-10"
+        style={{
+          backgroundImage: `url(${img7})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        <div className="max-w-screen-2xl mx-auto">
           <h1 className="font-display text-3xl md:text-4xl font-bold text-gray-900 capitalize">
             {title}
           </h1>
-          <p className="text-white-500 mt-2 text-sm">
-            <Link to="/" className="hover:text-teal-700 no-underline">
+          <div className="text-white/70 mt-2 text-sm font-medium flex items-center">
+           
+            <Link
+              to="/"
+              className="text-gray/50 hover:text-white no-underline transition-colors ml-1"
+            >
               Home
             </Link>
-             <FiChevronRight className="mx-1 text-gray-400" size={10} />
-            <Link to="/shop" className="hover:text-teal-700">
-              Shop
-            </Link>
-
-
-
-
+            <span className="mx-2 text-black/50">/</span>
+            <span className="text-black">Shop</span>
             {categoryName && (
               <>
-                <span className="mx-2">/</span>
-                <span className="text-gray-800">{title}</span>
+                <span className="mx-2 text-white/50">/</span>
+                <span className="text-white">{title}</span>
               </>
             )}
-          </p>
+          </div>
         </div>
       </header>
 
@@ -92,25 +98,28 @@ const Shop = () => {
               Tip
             </p>
             <p>
-              Use the department strip above to jump between categories quickly
-              — same idea as a major marketplace.
+              Use the department strip above to jump between categories quickly.
             </p>
           </div>
         </aside>
 
         <main className="flex-1 min-w-0">
           {loading ? (
-            <div className="py-20">
+            <div className="py-20 flex justify-center">
               <Loader />
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
               {products.length > 0 ? (
                 products.map((product) => (
-                  <ProductCard key={product.id} product={product} renderAdd />
+                  <ProductCard
+                    key={product.id || product._id}
+                    product={product}
+                    renderAdd
+                  />
                 ))
               ) : (
-                <p className="text-gray-500 col-span-full">
+                <p className="text-gray-500 col-span-full text-center py-10">
                   No products found in this category.
                 </p>
               )}

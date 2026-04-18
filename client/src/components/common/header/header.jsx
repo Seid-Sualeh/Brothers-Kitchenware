@@ -3,6 +3,7 @@ import { Link, NavLink, useLocation } from "react-router-dom";
 import { FiSearch, FiUser, FiShoppingCart, FiChevronDown, FiMenu, FiX } from "react-icons/fi";
 import { useCart } from "../../../context/CartContext";
 import { useAuth } from "../../../context/AuthContext";
+import { STORE_CATEGORIES } from "../../../constants/storeCategories.js";
 
 const navLinkClass = ({ isActive }) =>
   [
@@ -18,23 +19,17 @@ const Header = () => {
   const { pathname } = useLocation();
   const categorySectionActive = pathname.startsWith("/category");
 
-  const categories = [
-    { name: "Cookware", path: "/category/cookware" },
-    { name: "Dining ware", path: "/category/dining" },
-    { name: "Gadgets", path: "/category/gadgets" },
-    { name: "Appliances", path: "/category/appliances" },
-    { name: "Cutlery", path: "/category/cutlery" },
-    { name: "Bakeware", path: "/category/bakeware" },
-    { name: "Storage", path: "/category/storage" },
-    { name: "Coffee & tea", path: "/category/coffee-tea" },
-  ];
+  const categories = STORE_CATEGORIES.map((category) => ({
+    name: category.label,
+    path: `/category/${category.slug}`,
+  }));
 
   return (
     <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200/90 px-4 md:px-12 py-4 flex justify-between items-center gap-4">
       <Link
         to="/"
         className="text-2xl md:text-3xl font-display font-black text-[#1a1f1e] tracking-tight shrink-0 hover:opacity-90 transition-opacity"
-        aria-label="Brothers Kitchenware home"
+        aria-label="Brothers Home Goods home"
       >
         B<span className="text-[#2d6a6a]">K</span>
       </Link>

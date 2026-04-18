@@ -3,17 +3,14 @@ import { Link, useParams } from "react-router-dom";
 import { IconPlus } from "@tabler/icons-react";
 import { DashboardLayout } from "../../../components/dashboard/layout/DashboardLayout";
 import { adminApi } from "../../../lib/adminApi.js";
+import { STORE_CATEGORIES } from "../../../constants/storeCategories.js";
 
 const defaultCategoryOptions = [
   { value: "", label: "Select category" },
-  { value: "cookware", label: "Cookware" },
-  { value: "dining", label: "Dining" },
-  { value: "gadgets", label: "Gadgets" },
-  { value: "appliances", label: "Appliances" },
-  { value: "cutlery", label: "Cutlery" },
-  { value: "bakeware", label: "Bakeware" },
-  { value: "storage", label: "Storage" },
-  { value: "coffee-tea", label: "Coffee & Tea" },
+  ...STORE_CATEGORIES.map((category) => ({
+    value: category.slug,
+    label: category.label,
+  })),
 ];
 
 const CreateProduct = () => {
@@ -27,8 +24,6 @@ const CreateProduct = () => {
     productCategory: "",
     productImageUrl: "",
     productDescription: "",
-    productRating: "",
-    productReviewCount: "",
     productBestSeller: false,
     productFeatured: false,
   });
@@ -59,8 +54,6 @@ const CreateProduct = () => {
           productCategory: data.category_slug || "",
           productImageUrl: data.image_url || "",
           productDescription: data.description || "",
-          productRating: data.rating || "",
-          productReviewCount: data.review_count || "",
           productBestSeller: !!data.is_best_seller,
           productFeatured: !!data.is_featured,
         });
@@ -94,8 +87,6 @@ const CreateProduct = () => {
         image_url: formData.productImageUrl.trim(),
         category_slug: formData.productCategory,
         stock_quantity: parseInt(formData.productStock),
-        rating: parseFloat(formData.productRating) || 0,
-        review_count: parseInt(formData.productReviewCount) || 0,
         is_best_seller: formData.productBestSeller ? 1 : 0,
         is_featured: formData.productFeatured ? 1 : 0,
       };
@@ -124,8 +115,6 @@ const CreateProduct = () => {
       productCategory: "",
       productImageUrl: "",
       productDescription: "",
-      productRating: "",
-      productReviewCount: "",
       productBestSeller: false,
       productFeatured: false,
     });
@@ -210,39 +199,6 @@ const CreateProduct = () => {
                       placeholder="0"
                       required
                       value={formData.productStock}
-                      onChange={handleChange}
-                    />
-                  </div>
-                </div>
-
-                <div className="row">
-                  <div className="col-md-6 mb-3">
-                    <label htmlFor="productRating" className="form-label">
-                      Rating
-                    </label>
-                    <input
-                      type="number"
-                      className="form-control"
-                      id="productRating"
-                      placeholder="4.5"
-                      min="0"
-                      max="5"
-                      step="0.1"
-                      value={formData.productRating}
-                      onChange={handleChange}
-                    />
-                  </div>
-                  <div className="col-md-6 mb-3">
-                    <label htmlFor="productReviewCount" className="form-label">
-                      Review Count
-                    </label>
-                    <input
-                      type="number"
-                      className="form-control"
-                      id="productReviewCount"
-                      placeholder="0"
-                      min="0"
-                      value={formData.productReviewCount}
                       onChange={handleChange}
                     />
                   </div>

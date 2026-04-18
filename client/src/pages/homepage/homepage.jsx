@@ -60,10 +60,10 @@ const Home = () => {
         <div className="relative z-10 w-full max-w-screen-2xl mx-auto px-6 md:px-14 py-24 md:py-28">
           <div className="max-w-xl">
             <h1 className="font-display text-white text-4xl sm:text-5xl md:text-6xl font-bold uppercase leading-[1.05] tracking-tight">
-              Elevate your culinary artistry.
+              Everything to cook, serve, and store.
             </h1>
             <p className="mt-5 text-lg text-white/85 font-light">
-              Quality tools for the heart of your home.
+              Cookware, tableware, food storage, and kitchen appliances — including fridges, ranges, and more.
             </p>
             <Link
               to="/shop"
@@ -101,9 +101,7 @@ const Home = () => {
                   Shop by category
                 </h2>
                 <p className="mt-3 text-gray-500 max-w-2xl mx-auto text-sm md:text-base">
-                  Browse departments the way you would on a large marketplace —
-                  quick jumps, clear labels, and deep inventory behind each
-                  tile.
+                  Jump straight into prep, dining, pantry storage, or major appliances — organized like a specialty kitchen store.
                 </p>
               </div>
               <div className="max-w-screen-2xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-5 md:gap-8">
@@ -138,7 +136,7 @@ const Home = () => {
                     Featured collections
                   </h2>
                   <p className="text-gray-500 text-sm mt-2">
-                    Editor picks with room to tell the story behind each set.
+                    Editor picks across home essentials, organization, and decor.
                   </p>
                 </div>
                 <Link
@@ -200,7 +198,7 @@ const Home = () => {
                     Best sellers
                   </h2>
                   <p className="text-gray-500 text-sm mt-2">
-                    Top-rated essentials customers buy again and again.
+                    Top-rated home goods customers keep coming back for.
                   </p>
                 </div>
                 <Link

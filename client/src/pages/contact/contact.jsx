@@ -109,10 +109,10 @@ const Contact = () => {
                     Email address:
                   </p>
                   <a
-                    href="mailto:brotherds@kitchenware.com"
+                    href="mailto:support@brothershomegoods.com"
                     className="text-base font-semibold text-black hover:opacity-70 break-all"
                   >
-                    brotherds@kitchenware.com
+                    support@brothershomegoods.com
                   </a>
                 </div>
               </div>

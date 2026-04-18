@@ -18,6 +18,8 @@ const Reports = () => {
   const [topProducts, setTopProducts] = useState([]);
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(true);
+  const [topPage, setTopPage] = useState(1);
+  const itemsPerPage = 10;
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -29,6 +31,7 @@ const Reports = () => {
       ]);
       setSummary(s.data);
       setTopProducts(Array.isArray(t.data) ? t.data : []);
+      setTopPage(1);
     } catch (e) {
       setErr(e.response?.data?.error || "Could not load reports.");
     } finally {
@@ -70,6 +73,12 @@ const Reports = () => {
     : [];
 
   const placeholder = "https://placehold.co/48x48/e2e8e0/1e293b?text=BK";
+
+  const displayedTop = topProducts.slice(
+    (topPage - 1) * itemsPerPage,
+    topPage * itemsPerPage,
+  );
+  const totalTopPages = Math.ceil(topProducts.length / itemsPerPage);
 
   return (
     <DashboardLayout>
@@ -156,7 +165,7 @@ const Reports = () => {
                 <div className="card-body p-4">
                   <h2 className="mb-3 fs-5">Top products (completed orders)</h2>
                   <div className="list-group list-group-flush">
-                    {topProducts.map((product) => (
+                    {displayedTop.map((product) => (
                       <div
                         key={product.product_id}
                         className="list-group-item p-3 d-flex align-items-center"
@@ -188,12 +197,56 @@ const Reports = () => {
                         </div>
                       </div>
                     ))}
-                    {topProducts.length === 0 && (
+                    {displayedTop.length === 0 && (
                       <div className="text-muted small p-3">
                         No completed order lines yet.
                       </div>
                     )}
                   </div>
+                  {totalTopPages > 1 && (
+                    <div className="card-footer bg-white px-4 py-3">
+                      <nav>
+                        <ul className="pagination pagination-sm mb-0 justify-content-center">
+                          <li
+                            className={`page-item ${topPage === 1 ? "disabled" : ""}`}
+                          >
+                            <button
+                              className="page-link"
+                              onClick={() => setTopPage(topPage - 1)}
+                            >
+                              Previous
+                            </button>
+                          </li>
+                          {Array.from(
+                            { length: totalTopPages },
+                            (_, i) => i + 1,
+                          ).map((page) => (
+                            <li
+                              key={page}
+                              className={`page-item ${page === topPage ? "active" : ""}`}
+                            >
+                              <button
+                                className="page-link"
+                                onClick={() => setTopPage(page)}
+                              >
+                                {page}
+                              </button>
+                            </li>
+                          ))}
+                          <li
+                            className={`page-item ${topPage === totalTopPages ? "disabled" : ""}`}
+                          >
+                            <button
+                              className="page-link"
+                              onClick={() => setTopPage(topPage + 1)}
+                            >
+                              Next
+                            </button>
+                          </li>
+                        </ul>
+                      </nav>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

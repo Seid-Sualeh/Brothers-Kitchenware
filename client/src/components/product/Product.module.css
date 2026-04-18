@@ -43,12 +43,6 @@
     border-color: #1a4a44;
 }
 
-.rating{
-    display: flex;
-    align-items: center;
-    margin: 4px 0 8px 0;
-}
-
 .product_container{
    display: grid;
    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));

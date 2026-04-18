@@ -1,14 +1,25 @@
 const express = require("express");
 const cors = require("cors");
+const http = require("http");
+const { Server } = require("socket.io");
 const path = require("path");
 const fs = require("fs");
 require("dotenv").config();
 
 const { notifyAdmins } = require("./src/services/admin.service");
+const { authCustomer } = require("./src/utils/auth");
 
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST", "PATCH", "PUT", "DELETE"],
+  },
+});
 app.use(cors());
 app.use(express.json());
+app.locals.io = io;
 
 const catalogPath = path.join(__dirname, "data", "catalog.json");
 let memoryCatalog = null;
@@ -83,6 +94,10 @@ async function getCategories() {
     const [rows] = await pool.query(
       "SELECT id, name, slug, image_url FROM categories ORDER BY id ASC",
     );
+    if (!rows.length) {
+      ensureMemoryCatalog();
+      return memoryCatalog.categories;
+    }
     return rows;
   } catch (err) {
     console.warn("categories query failed, using catalog.json:", err.message);
@@ -210,6 +225,69 @@ app.get("/api/products/:id", async (req, res) => {
   }
 });
 
+// Product ratings routes
+app.get("/api/products/:id/ratings", async (req, res) => {
+  try {
+    const productId = req.params.id;
+    const [ratings] = await pool.query(
+      "SELECT id, user_name, rating, review, created_at FROM product_ratings WHERE product_id = ? ORDER BY created_at DESC",
+      [productId],
+    );
+    res.json(ratings);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post("/api/products/:id/ratings", authCustomer, async (req, res) => {
+  try {
+    const productId = req.params.id;
+    const { rating, review } = req.body;
+    const userId = req.user.sub;
+    const userName = req.user.name;
+
+    if (!rating || rating < 1 || rating > 5) {
+      return res.status(400).json({ error: "Rating must be between 1 and 5" });
+    }
+
+    // Check if user already rated this product
+    const [existing] = await pool.query(
+      "SELECT id FROM product_ratings WHERE product_id = ? AND user_id = ?",
+      [productId, userId],
+    );
+
+    if (existing.length > 0) {
+      return res
+        .status(400)
+        .json({ error: "You have already rated this product" });
+    }
+
+    await pool.query(
+      "INSERT INTO product_ratings (product_id, user_id, user_name, rating, review) VALUES (?, ?, ?, ?, ?)",
+      [productId, userId, userName, rating, review || null],
+    );
+
+    // Update product average rating
+    await pool.query(
+      `
+      UPDATE products
+      SET average_rating = (
+        SELECT AVG(rating) FROM product_ratings WHERE product_id = ?
+      ),
+      total_ratings = (
+        SELECT COUNT(*) FROM product_ratings WHERE product_id = ?
+      )
+      WHERE id = ?
+    `,
+      [productId, productId, productId],
+    );
+
+    res.status(201).json({ message: "Rating submitted successfully" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.get("/api/landing", async (_req, res) => {
   try {
     const payload = await getLandingPayload();
@@ -243,11 +321,25 @@ app.post("/api/contact", async (req, res) => {
 const registerAdminRoutes = require("./adminRoutes");
 const installRoutes = require("./src/routes/install.routes");
 
+io.on("connection", () => {});
+
 const PORT = process.env.PORT || 5000;
 
 app.use("/api", installRoutes);
 
 initDatabase().then(() => {
   registerAdminRoutes(app, () => ({ pool, dbReady }));
-  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+  // Serve static files from the React app build directory
+  app.use(express.static(path.join(__dirname, "../client/dist")));
+
+  // Catch all handler: send back React's index.html file for any non-API routes
+  app.use((req, res, next) => {
+    if (req.path.startsWith("/api")) {
+      return next();
+    }
+    res.sendFile(path.join(__dirname, "../client/dist/index.html"));
+  });
+
+  server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 });

@@ -9,9 +9,12 @@ import {
   IconCashBanknote,
   IconArrowUpLeft,
   IconCalendar,
+  IconBell,
+  IconAlertCircle,
 } from "@tabler/icons-react";
 import { adminApi } from "../../../lib/adminApi.js";
 import { useAdminAuth } from "../../../context/AdminAuthContext.jsx";
+import { useSocket } from "../../../context/SocketContext.jsx";
 import { DashboardLayout } from "../../../components/dashboard/layout/DashboardLayout";
 import Loader from "../../../components/Loader/Loader";
 
@@ -29,6 +32,7 @@ const statusClass = (status) => {
 
 const Dashboard = () => {
   const { isAdmin } = useAdminAuth();
+  const { isConnected } = useSocket();
   const [summary, setSummary] = useState(null);
   const [recent, setRecent] = useState([]);
   const [topProducts, setTopProducts] = useState([]);
@@ -36,6 +40,65 @@ const Dashboard = () => {
   const [err, setErr] = useState("");
   const [period, setPeriod] = useState("all");
   const [loading, setLoading] = useState(true);
+  const [notifications, setNotifications] = useState([]);
+  const [recentPage, setRecentPage] = useState(1);
+  const [topPage, setTopPage] = useState(1);
+  const [lowPage, setLowPage] = useState(1);
+  const itemsPerPage = 10;
+
+  // Handle real-time notifications
+  useEffect(() => {
+    const handleOrderProcessing = (event) => {
+      const data = event.detail;
+      const message = `New order #${data.orderId} is processing (${data.paymentMethod})`;
+      setNotifications((prev) => [
+        ...prev,
+        { type: "order_processing", message, time: new Date() },
+      ]);
+      setErr(""); // Clear any previous errors when new data arrives
+    };
+
+    const handleOrderCompleted = (event) => {
+      const data = event.detail;
+      const message = `Order #${data.orderId} has been completed`;
+      setNotifications((prev) => [
+        ...prev,
+        { type: "order_completed", message, time: new Date() },
+      ]);
+      // Refresh data when order status changes
+      load();
+    };
+
+    const handleInventoryAlert = (event) => {
+      const data = event.detail;
+      const message = `Low stock alert: ${data.productName} (${data.stockQuantity} remaining)`;
+      setNotifications((prev) => [
+        ...prev,
+        { type: "inventory_alert", message, time: new Date() },
+      ]);
+      // Refresh low stock data
+      load();
+    };
+
+    window.addEventListener("socket:order:processing", handleOrderProcessing);
+    window.addEventListener("socket:order:completed", handleOrderCompleted);
+    window.addEventListener("socket:inventory:alert", handleInventoryAlert);
+
+    return () => {
+      window.removeEventListener(
+        "socket:order:processing",
+        handleOrderProcessing,
+      );
+      window.removeEventListener(
+        "socket:order:completed",
+        handleOrderCompleted,
+      );
+      window.removeEventListener(
+        "socket:inventory:alert",
+        handleInventoryAlert,
+      );
+    };
+  }, []);
 
   const load = useCallback(async (selectedPeriod = "all") => {
     setLoading(true);
@@ -53,6 +116,9 @@ const Dashboard = () => {
       setRecent(Array.isArray(r.data) ? r.data : []);
       setTopProducts(Array.isArray(t.data) ? t.data : []);
       setLowStock(Array.isArray(l.data) ? l.data : []);
+      setRecentPage(1);
+      setTopPage(1);
+      setLowPage(1);
     } catch (e) {
       setErr(
         e.response?.data?.error ||
@@ -123,6 +189,9 @@ const Dashboard = () => {
       ]
     : [];
 
+  const connectionStatus = isConnected ? "Connected" : "Disconnected";
+  const connectionColor = isConnected ? "success" : "danger";
+
   const profitCards = summary
     ? [
         {
@@ -148,6 +217,24 @@ const Dashboard = () => {
 
   const placeholderImg = "https://placehold.co/64x64/e2e8e0/1e293b?text=BK";
 
+  const displayedRecent = recent.slice(
+    (recentPage - 1) * itemsPerPage,
+    recentPage * itemsPerPage,
+  );
+  const totalRecentPages = Math.ceil(recent.length / itemsPerPage);
+
+  const displayedTop = topProducts.slice(
+    (topPage - 1) * itemsPerPage,
+    topPage * itemsPerPage,
+  );
+  const totalTopPages = Math.ceil(topProducts.length / itemsPerPage);
+
+  const displayedLow = lowStock.slice(
+    (lowPage - 1) * itemsPerPage,
+    lowPage * itemsPerPage,
+  );
+  const totalLowPages = Math.ceil(lowStock.length / itemsPerPage);
+
   return (
     <DashboardLayout>
       {loading ? (
@@ -159,9 +246,59 @@ const Dashboard = () => {
           <div className="row">
             <div className="col-12">
               <div className="m-5">
-                <h1 className="fs-3 mt-5">Dashboard</h1>
-                <p className="text-muted">Live metrics from your database.</p>
+                <div className="d-flex justify-content-between align-items-center">
+                  <div>
+                    <h1 className="fs-3 mt-5">Dashboard</h1>
+                    <p className="text-muted">
+                      Live metrics from your database.
+                    </p>
+                  </div>
+                  <div className="d-flex align-items-center gap-3">
+                    <span
+                      className={`badge bg-${connectionColor}-subtle text-${connectionColor}`}
+                    >
+                      <IconBell size={14} className="me-1" />
+                      {connectionStatus}
+                    </span>
+                    {notifications.length > 0 && (
+                      <span className="badge bg-primary-subtle text-primary">
+                        {notifications.length} notifications
+                      </span>
+                    )}
+                  </div>
+                </div>
                 {err && <div className="alert alert-warning">{err}</div>}
+
+                {/* Real-time notifications */}
+                {notifications.length > 0 && (
+                  <div className="mt-3">
+                    <div
+                      className="alert alert-info alert-dismissible fade show"
+                      role="alert"
+                    >
+                      <div className="d-flex flex-column gap-2">
+                        {notifications.slice(-3).map((notification, index) => (
+                          <div
+                            key={index}
+                            className="d-flex align-items-center gap-2"
+                          >
+                            <IconAlertCircle size={16} />
+                            <span>{notification.message}</span>
+                            <small className="text-muted ms-auto">
+                              {notification.time.toLocaleTimeString()}
+                            </small>
+                          </div>
+                        ))}
+                      </div>
+                      <button
+                        type="button"
+                        className="btn-close"
+                        onClick={() => setNotifications([])}
+                        aria-label="Close"
+                      ></button>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -267,7 +404,7 @@ const Dashboard = () => {
                   </button>
                 </div>
                 <ul className="list-group list-group-flush">
-                  {topProducts.map((product) => (
+                  {displayedTop.map((product) => (
                     <li
                       key={product.product_id}
                       className="list-group-item d-flex align-items-center gap-3"
@@ -291,12 +428,56 @@ const Dashboard = () => {
                       </div>
                     </li>
                   ))}
-                  {topProducts.length === 0 && (
+                  {displayedTop.length === 0 && (
                     <li className="list-group-item text-muted small">
                       No completed sales yet.
                     </li>
                   )}
                 </ul>
+                {totalTopPages > 1 && (
+                  <div className="card-footer bg-white px-4 py-3">
+                    <nav>
+                      <ul className="pagination pagination-sm mb-0 justify-content-center">
+                        <li
+                          className={`page-item ${topPage === 1 ? "disabled" : ""}`}
+                        >
+                          <button
+                            className="page-link"
+                            onClick={() => setTopPage(topPage - 1)}
+                          >
+                            Previous
+                          </button>
+                        </li>
+                        {Array.from(
+                          { length: totalTopPages },
+                          (_, i) => i + 1,
+                        ).map((page) => (
+                          <li
+                            key={page}
+                            className={`page-item ${page === topPage ? "active" : ""}`}
+                          >
+                            <button
+                              className="page-link"
+                              onClick={() => setTopPage(page)}
+                            >
+                              {page}
+                            </button>
+                          </li>
+                        ))}
+                        <li
+                          className={`page-item ${topPage === totalTopPages ? "disabled" : ""}`}
+                        >
+                          <button
+                            className="page-link"
+                            onClick={() => setTopPage(topPage + 1)}
+                          >
+                            Next
+                          </button>
+                        </li>
+                      </ul>
+                    </nav>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -306,7 +487,7 @@ const Dashboard = () => {
                   <h4 className="mb-0 h5">Low Stock Products</h4>
                 </div>
                 <ul className="list-group list-group-flush">
-                  {lowStock.map((product) => (
+                  {displayedLow.map((product) => (
                     <li
                       key={product.id}
                       className="list-group-item d-flex align-items-center gap-3"
@@ -330,12 +511,56 @@ const Dashboard = () => {
                       </div>
                     </li>
                   ))}
-                  {lowStock.length === 0 && (
+                  {displayedLow.length === 0 && (
                     <li className="list-group-item text-muted small">
                       No low-stock rows (or stock column missing).
                     </li>
                   )}
                 </ul>
+                {totalLowPages > 1 && (
+                  <div className="card-footer bg-white px-4 py-3">
+                    <nav>
+                      <ul className="pagination pagination-sm mb-0 justify-content-center">
+                        <li
+                          className={`page-item ${lowPage === 1 ? "disabled" : ""}`}
+                        >
+                          <button
+                            className="page-link"
+                            onClick={() => setLowPage(lowPage - 1)}
+                          >
+                            Previous
+                          </button>
+                        </li>
+                        {Array.from(
+                          { length: totalLowPages },
+                          (_, i) => i + 1,
+                        ).map((page) => (
+                          <li
+                            key={page}
+                            className={`page-item ${page === lowPage ? "active" : ""}`}
+                          >
+                            <button
+                              className="page-link"
+                              onClick={() => setLowPage(page)}
+                            >
+                              {page}
+                            </button>
+                          </li>
+                        ))}
+                        <li
+                          className={`page-item ${lowPage === totalLowPages ? "disabled" : ""}`}
+                        >
+                          <button
+                            className="page-link"
+                            onClick={() => setLowPage(lowPage + 1)}
+                          >
+                            Next
+                          </button>
+                        </li>
+                      </ul>
+                    </nav>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -357,7 +582,7 @@ const Dashboard = () => {
                   </select>
                 </div>
                 <ul className="list-group list-group-flush">
-                  {recent.map((sale) => (
+                  {displayedRecent.map((sale) => (
                     <li
                       key={sale.id}
                       className="list-group-item d-flex align-items-center gap-3 flex-wrap"
@@ -410,12 +635,56 @@ const Dashboard = () => {
                       </div>
                     </li>
                   ))}
-                  {recent.length === 0 && (
+                  {displayedRecent.length === 0 && (
                     <li className="list-group-item text-muted small">
                       No orders yet. Checkouts appear here.
                     </li>
                   )}
                 </ul>
+                {totalRecentPages > 1 && (
+                  <div className="card-footer bg-white px-4 py-3">
+                    <nav>
+                      <ul className="pagination pagination-sm mb-0 justify-content-center">
+                        <li
+                          className={`page-item ${recentPage === 1 ? "disabled" : ""}`}
+                        >
+                          <button
+                            className="page-link"
+                            onClick={() => setRecentPage(recentPage - 1)}
+                          >
+                            Previous
+                          </button>
+                        </li>
+                        {Array.from(
+                          { length: totalRecentPages },
+                          (_, i) => i + 1,
+                        ).map((page) => (
+                          <li
+                            key={page}
+                            className={`page-item ${page === recentPage ? "active" : ""}`}
+                          >
+                            <button
+                              className="page-link"
+                              onClick={() => setRecentPage(page)}
+                            >
+                              {page}
+                            </button>
+                          </li>
+                        ))}
+                        <li
+                          className={`page-item ${recentPage === totalRecentPages ? "disabled" : ""}`}
+                        >
+                          <button
+                            className="page-link"
+                            onClick={() => setRecentPage(recentPage + 1)}
+                          >
+                            Next
+                          </button>
+                        </li>
+                      </ul>
+                    </nav>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -423,7 +692,7 @@ const Dashboard = () => {
           <div className="row">
             <div className="col-12">
               <footer className="text-center py-2 mt-6 text-secondary">
-                <p className="mb-0 small">BK Kitchenware — admin dashboard</p>
+                <p className="mb-0 small">BK Home Goods — admin dashboard</p>
               </footer>
             </div>
           </div>

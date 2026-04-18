@@ -1,4 +1,9 @@
 const bcrypt = require("bcryptjs");
+const {
+  initializePayment,
+  mapMethodToProvider,
+  sanitizeMobilePaymentDetails,
+} = require("./paymentGateway.service");
 
 function normalizeEmail(value) {
   return String(value || "")
@@ -96,14 +101,12 @@ async function createProduct(db, productData) {
     image_url,
     category_slug,
     stock_quantity,
-    rating,
-    review_count,
     is_best_seller,
     is_featured,
   } = productData;
   const [result] = await db.query(
-    `INSERT INTO products (name, description, price, image_url, category_slug, stock_quantity, rating, review_count, is_best_seller, is_featured)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO products (name, description, price, image_url, category_slug, stock_quantity, is_best_seller, is_featured)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       name,
       description || "",
@@ -111,8 +114,6 @@ async function createProduct(db, productData) {
       image_url,
       category_slug,
       stock_quantity || 50,
-      rating || 0,
-      review_count || 0,
       is_best_seller || 0,
       is_featured || 0,
     ],
@@ -125,8 +126,6 @@ async function createProduct(db, productData) {
     image_url,
     category_slug,
     stock_quantity: stock_quantity || 50,
-    rating: rating || 0,
-    review_count: review_count || 0,
     is_best_seller: is_best_seller || 0,
     is_featured: is_featured || 0,
   };
@@ -147,13 +146,11 @@ async function updateProduct(db, productId, productData) {
     image_url,
     category_slug,
     stock_quantity,
-    rating,
-    review_count,
     is_best_seller,
     is_featured,
   } = productData;
   const [result] = await db.query(
-    `UPDATE products SET name = ?, description = ?, price = ?, image_url = ?, category_slug = ?, stock_quantity = ?, rating = ?, review_count = ?, is_best_seller = ?, is_featured = ?, updated_at = NOW() WHERE id = ?`,
+    `UPDATE products SET name = ?, description = ?, price = ?, image_url = ?, category_slug = ?, stock_quantity = ?, is_best_seller = ?, is_featured = ?, updated_at = NOW() WHERE id = ?`,
     [
       name,
       description || "",
@@ -161,8 +158,6 @@ async function updateProduct(db, productId, productData) {
       image_url,
       category_slug,
       stock_quantity || 50,
-      rating || 0,
-      review_count || 0,
       is_best_seller || 0,
       is_featured || 0,
       productId,
@@ -191,10 +186,30 @@ async function notifyUser(db, userId, { type, title, body, relatedOrderId }) {
 }
 
 async function checkoutOrder(db, userId, items) {
+  return checkoutOrderWithPayment(db, userId, { items, paymentMethod: "cash" });
+}
+
+async function checkoutOrderWithPayment(
+  db,
+  userId,
+  { items, paymentMethod = "cash", paymentDetails = {} },
+) {
   const conn = await db.getConnection();
   try {
     if (!Array.isArray(items) || items.length === 0) {
       throw new Error("items array required");
+    }
+
+    const method = String(paymentMethod || "cash").toLowerCase();
+    if (!["telebirr", "mpesa", "cash"].includes(method)) {
+      throw new Error("Unsupported payment method");
+    }
+
+    if (method === "telebirr" || method === "mpesa") {
+      const mobileDetails = sanitizeMobilePaymentDetails(paymentDetails);
+      if (!mobileDetails.phoneNumber || !mobileDetails.fullName || !mobileDetails.pin) {
+        throw new Error("phone number, full name, and PIN are required");
+      }
     }
 
     // Check stock for each item
@@ -228,11 +243,36 @@ async function checkoutOrder(db, userId, items) {
     }
 
     await conn.beginTransaction();
+    const provider = mapMethodToProvider(method);
     const [orderResult] = await conn.query(
-      "INSERT INTO orders (user_id, customer_email, customer_name, status, total_amount) VALUES (?, ?, ?, 'processing', ?)",
-      [userId, user.email, user.name, total],
+      "INSERT INTO orders (user_id, customer_email, customer_name, status, total_amount, payment_method, payment_provider) VALUES (?, ?, ?, 'processing', ?, ?, ?)",
+      [userId, user.email, user.name, total, method, provider],
     );
     const orderId = orderResult.insertId;
+
+    const payment = await initializePayment({
+      provider,
+      amount: total,
+      orderId,
+      email: user.email,
+      name: user.name,
+      paymentDetails,
+    });
+    await conn.query(
+      "INSERT INTO payments (order_id, provider, amount, external_reference, status, metadata_json) VALUES (?, ?, ?, ?, ?, ?)",
+      [
+        orderId,
+        provider,
+        total,
+        payment.reference,
+        payment.status || "initialized",
+        JSON.stringify(payment.raw || {}),
+      ],
+    );
+    await conn.query(
+      "UPDATE orders SET payment_reference = ? WHERE id = ?",
+      [payment.reference, orderId],
+    );
 
     for (const item of items) {
       await conn.query(
@@ -248,14 +288,34 @@ async function checkoutOrder(db, userId, items) {
         ],
       );
       // Deduct stock
+      const qty = Number(item.quantity) || 1;
       await conn.query(
         "UPDATE products SET stock_quantity = COALESCE(stock_quantity, 0) - ? WHERE id = ?",
-        [Number(item.quantity) || 1, Number(item.product_id)],
+        [qty, Number(item.product_id)],
       );
+      const [[stock]] = await conn.query(
+        "SELECT COALESCE(stock_quantity, 0) AS stock_quantity, name FROM products WHERE id = ?",
+        [Number(item.product_id)],
+      );
+      if (stock && Number(stock.stock_quantity) <= 10) {
+        await notifyAdmins(db, {
+          type: "inventory_alert",
+          title: "Low stock alert",
+          body: `${stock.name} is low in stock (${stock.stock_quantity} remaining).`,
+        });
+      }
     }
 
     await conn.commit();
-    return { orderId, status: "processing", totalAmount: total };
+    return {
+      orderId,
+      status: "processing",
+      totalAmount: total,
+      paymentMethod: method,
+      paymentReference: payment.reference,
+      paymentProvider: provider,
+      paymentAction: payment.action || null,
+    };
   } catch (err) {
     await conn.rollback();
     throw err;
@@ -266,7 +326,7 @@ async function checkoutOrder(db, userId, items) {
 
 async function getCustomerOrders(db, userId) {
   const [orders] = await db.query(
-    "SELECT id, status, total_amount, created_at, payment_confirmed_at FROM orders WHERE user_id = ? ORDER BY created_at DESC",
+    "SELECT id, status, total_amount, payment_method, payment_provider, payment_reference, created_at, payment_confirmed_at FROM orders WHERE user_id = ? ORDER BY created_at DESC",
     [userId],
   );
   const output = [];
@@ -330,6 +390,60 @@ async function getAnalyticsSummary(db) {
   };
 }
 
+async function getAnalyticsTrends(db) {
+  const [monthlyRows] = await db.query(
+    `SELECT month_key,
+            SUM(total_sales) AS total_sales,
+            SUM(total_purchased) AS total_purchased,
+            SUM(total_expenses) AS total_expenses
+     FROM (
+       SELECT DATE_FORMAT(created_at, '%Y-%m') AS month_key,
+              COALESCE(SUM(total_amount), 0) AS total_sales,
+              0 AS total_purchased,
+              0 AS total_expenses
+       FROM orders
+       WHERE status = 'completed'
+       GROUP BY DATE_FORMAT(created_at, '%Y-%m')
+       UNION ALL
+       SELECT DATE_FORMAT(purchased_at, '%Y-%m') AS month_key,
+              0 AS total_sales,
+              COALESCE(SUM(amount), 0) AS total_purchased,
+              0 AS total_expenses
+       FROM purchases
+       GROUP BY DATE_FORMAT(purchased_at, '%Y-%m')
+       UNION ALL
+       SELECT DATE_FORMAT(incurred_at, '%Y-%m') AS month_key,
+              0 AS total_sales,
+              0 AS total_purchased,
+              COALESCE(SUM(amount), 0) AS total_expenses
+       FROM expenses
+       GROUP BY DATE_FORMAT(incurred_at, '%Y-%m')
+     ) merged
+     GROUP BY month_key
+     ORDER BY month_key DESC
+     LIMIT 12`,
+  );
+
+  const [statusRows] = await db.query(
+    `SELECT status, COUNT(*) AS count
+     FROM orders
+     GROUP BY status`,
+  );
+
+  return {
+    monthly: monthlyRows.reverse().map((row) => ({
+      month: row.month_key,
+      sales: Number(row.total_sales || 0),
+      purchases: Number(row.total_purchased || 0),
+      expenses: Number(row.total_expenses || 0),
+    })),
+    statusBreakdown: statusRows.map((row) => ({
+      status: row.status,
+      count: Number(row.count || 0),
+    })),
+  };
+}
+
 async function getRecentSales(db, period = "all") {
   let dateFilter = "";
   if (period === "today") {
@@ -376,6 +490,26 @@ async function getLowStock(db) {
   return rows;
 }
 
+async function finalizeOrderCompletion(db, orderId, userId, completionBody) {
+  await db.query(
+    "UPDATE orders SET status = 'completed', payment_confirmed_at = NOW(), updated_at = NOW() WHERE id = ?",
+    [orderId],
+  );
+  await db.query(
+    "UPDATE payments SET status = 'completed', updated_at = NOW() WHERE order_id = ?",
+    [orderId],
+  );
+
+  if (userId) {
+    await notifyUser(db, userId, {
+      type: "payment_confirmed",
+      title: "Thank you — payment confirmed",
+      body: completionBody,
+      relatedOrderId: orderId,
+    });
+  }
+}
+
 async function confirmOrder(db, orderId) {
   const [orders] = await db.query(
     "SELECT id, user_id, status FROM orders WHERE id = ?",
@@ -389,21 +523,53 @@ async function confirmOrder(db, orderId) {
     return { alreadyCompleted: true };
   }
 
-  await db.query(
-    "UPDATE orders SET status = 'completed', payment_confirmed_at = NOW(), updated_at = NOW() WHERE id = ?",
-    [orderId],
+  await finalizeOrderCompletion(
+    db,
+    orderId,
+    order.user_id,
+    `Your order #${orderId} is complete. Thanks for shopping with BK Home Goods!`,
   );
 
-  if (order.user_id) {
-    await notifyUser(db, order.user_id, {
-      type: "payment_confirmed",
-      title: "Thank you — payment confirmed",
-      body: `Your order #${orderId} is complete. Thanks for shopping with BK Kitchenware!`,
-      relatedOrderId: orderId,
-    });
+  return { orderId, status: "completed" };
+}
+
+async function confirmMobileWalletPayment(db, userId, orderId) {
+  const [orders] = await db.query(
+    "SELECT id, user_id, status, payment_method FROM orders WHERE id = ? AND user_id = ?",
+    [orderId, userId],
+  );
+  const order = orders[0];
+  if (!order) {
+    return null;
+  }
+  if (order.status === "completed") {
+    return { alreadyCompleted: true };
+  }
+  if (order.status === "cancelled") {
+    return { alreadyCancelled: true };
+  }
+  if (!["telebirr", "mpesa"].includes(String(order.payment_method))) {
+    throw new Error("Only Telebirr and M-Pesa orders can be confirmed here");
   }
 
-  return { orderId, status: "completed" };
+  await finalizeOrderCompletion(
+    db,
+    orderId,
+    order.user_id,
+    `Your ${String(order.payment_method).toUpperCase()} payment for order #${orderId} has been confirmed successfully.`,
+  );
+  await notifyAdmins(db, {
+    type: "mobile_payment_confirmed",
+    title: "Mobile wallet payment confirmed",
+    body: `Order #${orderId} was confirmed by the customer through ${String(order.payment_method).toUpperCase()}.`,
+    relatedOrderId: orderId,
+  });
+
+  return {
+    orderId,
+    status: "completed",
+    paymentMethod: order.payment_method,
+  };
 }
 
 async function cancelOrder(db, orderId) {
@@ -427,6 +593,10 @@ async function cancelOrder(db, orderId) {
 
   await db.query(
     "UPDATE orders SET status = 'cancelled', updated_at = NOW() WHERE id = ?",
+    [orderId],
+  );
+  await db.query(
+    "UPDATE payments SET status = 'failed', updated_at = NOW() WHERE order_id = ?",
     [orderId],
   );
 
@@ -478,14 +648,17 @@ module.exports = {
   notifyAdmins,
   notifyUser,
   checkoutOrder,
+  checkoutOrderWithPayment,
   getCustomerOrders,
   getNotifications,
   markNotificationRead,
   getAnalyticsSummary,
+  getAnalyticsTrends,
   getRecentSales,
   getTopProducts,
   getLowStock,
   confirmOrder,
+  confirmMobileWalletPayment,
   cancelOrder,
   getAdminNotifications,
   markAdminNotificationRead,

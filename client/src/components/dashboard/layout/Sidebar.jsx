@@ -36,12 +36,20 @@ export const Sidebar = ({ collapsed, mobileShow }) => {
     >
       <div className="logo-area">
         <Link to={staff?.role === "employee" ? "/admin/inventory" : "/admin/dashboard"} className="d-inline-flex">
-          <img src="/logo-icon.svg" alt="" width="24" />
+          {/* <img src="/logo-icon.svg" alt="" width="24" />
           {!collapsed && (
             <span className="logo-text ms-2">
               <img src="/logo.svg" alt="" />
             </span>
-          )}
+          )} */}
+
+          <Link
+                  to="/"
+                  className="text-2xl md:text-3xl font-display font-black text-[#1a1f1e] tracking-tight shrink-0 hover:opacity-90 transition-opacity"
+                  aria-label="Brothers Home Goods home"
+                >
+                  B<span className="text-[#2d6a6a]">K</span>
+                </Link>
         </Link>
       </div>
       <ul className="nav flex-column mt-4">

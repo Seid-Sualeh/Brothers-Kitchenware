@@ -11,10 +11,12 @@ const {
   getNotificationsController,
   markNotificationReadController,
   getAnalyticsSummaryController,
+  getAnalyticsTrendsController,
   getRecentSalesController,
   getTopProductsController,
   getLowStockController,
   confirmOrderController,
+  confirmMobileWalletPaymentController,
   cancelOrderController,
   getAdminNotificationsController,
   markAdminNotificationReadController,
@@ -22,6 +24,7 @@ const {
   addProductController,
   deleteProductController,
   updateProductController,
+  sendMarketingController,
 } = require("../controllers/admin.controller");
 
 module.exports = function createAdminRouter(getCtx) {
@@ -35,7 +38,12 @@ module.exports = function createAdminRouter(getCtx) {
 
   router.post("/orders/checkout", requireDb, authCustomer, checkoutController);
   router.get("/orders/my", requireDb, authCustomer, getMyOrdersController);
-
+  router.patch(
+    "/orders/:id/mobile-confirm",
+    requireDb,
+    authCustomer,
+    confirmMobileWalletPaymentController,
+  );
   router.get(
     "/me/notifications",
     requireDb,
@@ -54,6 +62,12 @@ module.exports = function createAdminRouter(getCtx) {
     requireDb,
     authStaff,
     getAnalyticsSummaryController,
+  );
+  router.get(
+    "/admin/analytics/trends",
+    requireDb,
+    authStaff,
+    getAnalyticsTrendsController,
   );
   router.get(
     "/admin/dashboard/recent-sales",
@@ -108,6 +122,13 @@ module.exports = function createAdminRouter(getCtx) {
     authStaff,
     requireAdmin,
     addEmployeeController,
+  );
+  router.post(
+    "/admin/marketing/send",
+    requireDb,
+    authStaff,
+    requireAdmin,
+    sendMarketingController,
   );
   router.post("/admin/products", requireDb, authStaff, addProductController);
   router.get("/admin/products/:id", requireDb, authStaff, async (req, res) => {

@@ -1,225 +1,230 @@
-# Brothers Kitchenware E-commerce Platform
+# Brothers Home Goods E-commerce Platform
 
-A full-stack e-commerce application for "Brothers Kitchenware," an online kitchenware store built with React frontend and Node.js/Express backend.
+Full-stack e-commerce app with React (`client`) and Express/MySQL (`server`) for a broader Brothers Home Goods store.
 
-## 🚀 Features
+## Implemented Features
 
-### User-Facing Features
+### Core Storefront
 
-- **Product Browsing**: Homepage with featured products, carousel, and category navigation
-- **Shop Page**: Filter products by categories, search functionality
-- **Product Details**: Detailed view with add-to-cart functionality
-- **Shopping Cart**: Add/remove items, quantity management, checkout process
-- **User Authentication**: Sign up and sign in with JWT-based authentication
-- **Order Management**: View order history and status
-- **Contact & Services**: Contact form submission and service information pages
+- Product browsing, wider home-goods category pages, shop search/filter, product detail, add to cart
+- User sign up/sign in and protected customer routes
+- Checkout flow and order history
+- Contact, About, and Services pages
 
-### Admin Panel Features
+### Admin & Staff
 
-- **Dashboard**: Overview with sales reports and analytics
-- **Inventory Management**: View and manage product inventory
-- **Product Management**: Create new products with details and images
-- **Employee Management**: Add and manage store employees
-- **Reports**: Sales and performance analytics
+- Admin/employee authentication with role-based access
+- Inventory, product CRUD, add employee, dashboard, and reports
+- Notifications center with unread tracking
 
-### Technical Features
+### Requested Advanced Features (Implemented)
 
-- **Responsive Design**: Mobile-first approach with Bootstrap and Material-UI
-- **Database Integration**: MySQL database with fallback to JSON data
-- **Authentication**: Secure JWT-based auth for users and admins
-- **API-First**: RESTful API endpoints for all operations
-- **State Management**: React Context for global state
-- **Protected Routes**: Route protection for authenticated areas
+- **Payment integration (Telebirr + M-Pesa + Simple Checkout)**: dropdown-driven checkout with mobile-wallet form fields, simulated phone confirmation, and admin-confirmed simple checkout
+- **WebSocket notifications**: real-time order events (`order:processing`, `order:completed`) to customer/admin views
+- **Product reviews**: per-product customer rating/comment with aggregate product rating updates
+- **Inventory alerts**: auto notification to staff when stock becomes low after checkout
+- **Multi-language support (i18n)**: language context, EN/AM switcher, persisted language, translated header/admin labels
+- **Analytics dashboard**: advanced summary + trend reporting including monthly trend data and status distribution
+- **Email notifications**: order processing, order completion, employee welcome, and marketing send flow
 
-## 🛠 Tech Stack
+## Tech Stack
 
 ### Frontend
 
-- **React 19**: Modern React with hooks and JSX
-- **Vite**: Fast build tool and development server
-- **Material-UI & Bootstrap**: UI components and styling
-- **React Router**: Client-side routing
-- **Axios**: HTTP client for API requests
-- **TailwindCSS**: Utility-first CSS framework
+- React 19, Vite, React Router
+- Bootstrap, TailwindCSS, MUI
+- Axios, Socket.IO client
 
 ### Backend
 
-- **Node.js & Express**: Server-side JavaScript runtime and web framework
-- **MySQL2**: Database driver with promise-based queries
-- **JWT**: JSON Web Tokens for authentication
-- **bcryptjs**: Password hashing
-- **CORS**: Cross-origin resource sharing
+- Node.js, Express
+- MySQL2
+- JWT auth, bcryptjs
+- Socket.IO server
+- Nodemailer
 
-## 📋 Prerequisites
+## Project Structure
 
-- Node.js (v16 or higher)
-- MySQL Server
-- npm or yarn package manager
-
-## 🔧 Installation
-
-1. **Clone the repository**
-
-   ```bash
-   git clone <repository-url>
-   cd brothers-kitchenware
-   ```
-
-2. **Backend Setup**
-
-   ```bash
-   cd server
-   npm install
-   ```
-
-3. **Frontend Setup**
-   ```bash
-   cd ../client
-   npm install
-   ```
-
-## ⚙️ Configuration
-
-### Database Setup
-
-1. Create a MySQL database for the application
-2. Run the initial setup script:
-   ```bash
-   mysql -u <username> -p <database_name> < src/sql/initial-queries.sql
-   ```
-
-### Environment Variables
-
-Create a `.env` file in the `server` directory with the following variables:
-
-```env
-DB_HOST=localhost
-DB_USER=your_db_user
-DB_PASSWORD=your_db_password
-DB_NAME=your_db_name
-PORT=5000
-JWT_SECRET=your_jwt_secret_key
-USE_MEMORY=false  # Set to true to use JSON fallback instead of DB
-```
-
-## 🚀 Running the Application
-
-1. **Start the Backend Server**
-
-   ```bash
-   cd server
-   npm run dev  # For development with nodemon
-   # or
-   npm start    # For production
-   ```
-
-   The server will run on http://localhost:5000
-
-2. **Start the Frontend**
-   ```bash
-   cd client
-   npm run dev
-   ```
-   The frontend will run on http://localhost:5173
-
-## 📚 API Documentation
-
-### Public Endpoints
-
-- `GET /health` - Health check
-- `GET /categories` - Get all product categories
-- `GET /products` - Get all products
-- `GET /products/:id` - Get product by ID
-- `GET /landing` - Get featured/landing products
-- `POST /contact` - Submit contact form
-
-### Authentication Endpoints
-
-- `POST /login` - User login
-- `POST /signin` - User registration
-
-### Admin Endpoints (Requires Admin Authentication)
-
-- `GET /admin/dashboard` - Admin dashboard data
-- `POST /admin/products` - Create new product
-- `POST /admin/employees` - Add new employee
-- `GET /admin/reports` - Sales reports
-
-## 📁 Project Structure
-
-```
+```text
 brothers-kitchenware/
-├── client/                 # React frontend
+├── client/
 │   ├── src/
-│   │   ├── components/     # Reusable UI components
-│   │   ├── pages/         # Page components
-│   │   ├── context/       # React contexts
-│   │   ├── Api/           # API configuration
+│   │   ├── components/
+│   │   ├── context/
+│   │   ├── lib/
+│   │   ├── pages/
 │   │   └── ...
-│   ├── package.json
-│   └── vite.config.js
-├── server/                 # Node.js backend
+│   └── package.json
+├── server/
 │   ├── src/
-│   │   ├── config/        # Database configuration
-│   │   ├── controllers/   # Route handlers
-│   │   ├── routes/        # API routes
-│   │   ├── services/      # Business logic
-│   │   └── ...
-│   ├── data/              # Fallback JSON data
-│   ├── package.json
-│   └── server.js
+│   │   ├── config/
+│   │   ├── controllers/
+│   │   ├── middleware/
+│   │   ├── routes/
+│   │   ├── services/
+│   │   ├── sql/
+│   │   └── utils/
+│   ├── data/
+│   └── package.json
 └── README.md
 ```
 
-## 🔮 Future Enhancements
+## Setup
 
-### Planned Features
+## Prerequisites
 
-- **Payment Integration**: Stripe/PayPal integration for secure payments
--by telebirr or mpesa
-- **Real-time Notifications**: WebSocket implementation for order updates
-- **Advanced Search**: Elasticsearch integration for better product search
-- **Wishlist**: User wishlist functionality
-- **Product Reviews**: Customer reviews and ratings system
-- **Inventory Alerts**: Low stock notifications for admin
-- **Multi-language Support**: Internationalization (i18n)
-- **Mobile App**: React Native companion app
-- **Analytics Dashboard**: Advanced reporting with charts
-- **Email Notifications**: Order confirmations and marketing emails
-- **Social Login**: Google/Facebook authentication
-- **Progressive Web App**: PWA features for better mobile experience
-- **Order Tracking**: Real-time shipment status and delivery updates
-- **Discounts & Coupons**: Promo codes, seasonal deals, and bundle pricing
-- **Customer Support Chat**: Live chat or ticket-based support
-- **Related Products & Recommendations**: Personalized suggestions for shoppers
-- **Role-Based Admin Control**: Granular permissions for admin/employee users
-- **SEO Optimization**: Improved metadata, crawling, and search engine visibility
+- Node.js 18+ recommended
+- MySQL 8+
 
-### Technical Improvements
+## Install
 
-- **Testing**: Unit and integration tests with Jest
-- **CI/CD**: Automated deployment pipeline
-- **Docker**: Containerization for easier deployment
-- **API Documentation**: Swagger/OpenAPI documentation
-- **Caching**: Redis for performance optimization
-- **Monitoring**: Application monitoring and error tracking
+```bash
+# backend
+cd server
+npm install
 
-## 🤝 Contributing
+# frontend
+cd ../client
+npm install
+```
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+## Server Environment (`server/.env`)
 
-## 📄 License
+```env
+PORT=5000
+JWT_SECRET=change_this_secret
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=
+DB_NAME=brothers_kitchenware
+DB_CONNECTION_LIMIT=10
+USE_MEMORY=false
 
-## 👥 Authors
+# SMTP (optional; if not set, email service uses console fallback)
+SMTP_HOST=
+SMTP_PORT=587
+SMTP_USER=
+SMTP_PASS=
+MAIL_FROM=no-reply@brotherskitchenware.com
 
-- Brothers Kitchenware Team
+# Optional payment simulation URLs
+TELEBIRR_SIMULATED_URL=https://telebirr.example/checkout
+CARD_SIMULATED_URL=https://payments.example/checkout
+```
 
-## 📞 Support
+## Database Initialization
 
-For support, email support@brotherskitchenware.com or create an issue in this repository.
+Run one of the following:
+
+1. API installer route (recommended)
+
+- Start backend then open `GET /install` or call `POST /install`
+
+2. SQL directly
+
+```bash
+mysql -u <user> -p <db_name> < server/src/sql/initial-queries.sql
+```
+
+## Run
+
+```bash
+# terminal 1
+cd server
+npm run dev
+
+# terminal 2
+cd client
+npm run dev
+```
+
+- Backend: `http://localhost:5000`
+- Frontend: `http://localhost:5173`
+
+## API Highlights
+
+### Auth
+
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+- `GET /api/auth/me`
+- `POST /api/admin/auth/login`
+
+### Checkout + Orders + Payment
+
+- `POST /api/orders/checkout`
+- `GET /api/orders/my`
+- `PATCH /api/orders/:id/mobile-confirm`
+- `PATCH /api/admin/orders/:id/confirm`
+- `PATCH /api/admin/orders/:id/cancel`
+
+### Reviews
+
+- `GET /api/products/:id/reviews`
+- `POST /api/products/:id/reviews`
+
+### Notifications
+
+- `GET /api/me/notifications`
+- `PATCH /api/me/notifications/:id/read`
+- `GET /api/admin/notifications`
+- `PATCH /api/admin/notifications/:id/read`
+
+### Analytics
+
+- `GET /api/admin/analytics/summary`
+- `GET /api/admin/analytics/trends`
+- `GET /api/admin/dashboard/recent-sales?period=all|today|week|month|year`
+- `GET /api/admin/dashboard/top-products`
+- `GET /api/admin/dashboard/low-stock`
+
+### Marketing
+
+- `POST /api/admin/marketing/send`
+
+## Feature Verification Checklist
+
+Use this quick QA flow to confirm everything works:
+
+1. **Payment (Telebirr/M-Pesa/Simple Checkout)**
+   - Login as customer
+   - Add product to cart and open payment page
+   - Checkout with `telebirr` or `mpesa`, fill phone/full name/PIN, then confirm on the simulated phone step
+   - Checkout with `Simple Checkout` and verify the order remains `processing` until admin confirmation
+   - Verify payment reference/provider and final status behavior for each flow
+
+2. **WebSocket Notifications**
+   - Keep customer orders page and admin dashboard open
+   - Place checkout -> admin topbar receives new notification
+   - Confirm order in admin -> customer orders page auto-refreshes with completion state
+
+3. **Product Reviews**
+   - Open product detail
+   - Submit rating/comment as signed-in customer
+   - Verify review appears and product rating/review count updates
+
+4. **Inventory Alerts**
+   - Reduce stock of a product close to low threshold
+   - Checkout that product
+   - Verify admin notification for low stock and low-stock list update
+
+5. **Multi-language (i18n)**
+   - Use header language switcher (EN/AM)
+   - Verify translated navbar/common/admin labels update immediately
+   - Refresh page and confirm selection persists
+
+6. **Analytics Dashboard**
+   - Open admin dashboard/reports
+   - Verify summary cards, monthly trends, status distribution, and top products load from DB
+
+7. **Email Notifications**
+   - Configure SMTP in `.env` (or use fallback logs)
+   - Checkout and confirm order
+   - Verify processing/completed emails (or fallback logs) and marketing send endpoint behavior
+
+## Notes
+
+- Mobile-wallet payment prompts are simulated adapters (safe placeholders) with real integration extension points.
+- If MySQL is unavailable and `USE_MEMORY=true`, storefront data falls back to `server/data/catalog.json`; admin/reporting features require DB.

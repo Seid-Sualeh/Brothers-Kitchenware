@@ -1,9 +1,9 @@
-import Rating from "@mui/material/Rating";
 import CurrencyFormat from "../CurrencyFormat/CurrencyFormat";
 import Style from "./Product.module.css";
 import { Link } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
 import { ADD_TO_CART_BUTTON_FULL } from "../../constants/addToCartButton.js";
+import StarRating from "../StarRating/StarRating";
 
 function normalizeProduct(product) {
   if (!product || typeof product !== "object") {
@@ -13,7 +13,8 @@ function normalizeProduct(product) {
       image: "",
       price: 0,
       description: "",
-      rating: { rate: 0, count: 0 },
+      averageRating: 0,
+      totalRatings: 0,
     };
   }
   const id = product.id;
@@ -21,23 +22,13 @@ function normalizeProduct(product) {
   const image = product.image_url ?? product.image ?? "";
   const price = Number(product.price ?? 0);
   const description = product.description ?? "";
-  let rating;
-  if (product.rating && typeof product.rating === "object" && "rate" in product.rating) {
-    rating = {
-      rate: Number(product.rating.rate),
-      count: Number(product.rating.count ?? 0),
-    };
-  } else {
-    rating = {
-      rate: Number(product.rating ?? product.rating_avg ?? 4.5),
-      count: Number(product.review_count ?? product.rating_count ?? 0),
-    };
-  }
-  return { id, title, image, price, description, rating };
+  const averageRating = Number(product.average_rating ?? 0);
+  const totalRatings = Number(product.total_ratings ?? 0);
+  return { id, title, image, price, description, averageRating, totalRatings };
 }
 
 const ProductCard = ({ product, flex, renderDesc, renderAdd }) => {
-  const { id, title, image, price, description, rating } = normalizeProduct(product);
+  const { id, title, image, price, description, averageRating, totalRatings } = normalizeProduct(product);
   const { addToCart } = useCart();
 
   const handleAddToCart = (e) => {
@@ -68,22 +59,15 @@ const ProductCard = ({ product, flex, renderDesc, renderAdd }) => {
           <h3 className="text-sm font-medium text-gray-900 mb-1 line-clamp-2">
             {title}
           </h3>
+          {averageRating > 0 && (
+            <StarRating rating={averageRating} totalRatings={totalRatings} />
+          )}
         </Link>
         {renderDesc && (
           <p className="text-xs text-gray-600 mb-2 line-clamp-3">
             {description}
           </p>
         )}
-        <div className={Style.rating}>
-          <Rating
-            name="read-only"
-            value={rating.rate}
-            readOnly
-            precision={0.1}
-            size="small"
-          />
-          <small className="text-xs text-gray-500 ml-1">({rating.count})</small>
-        </div>
         <div className="mt-auto">
           <div className="flex items-baseline gap-1 mb-2">
             <span className="text-lg font-bold text-gray-900">
@@ -96,9 +80,9 @@ const ProductCard = ({ product, flex, renderDesc, renderAdd }) => {
               className={ADD_TO_CART_BUTTON_FULL}
               onClick={handleAddToCart}
               style={{
-                borderRadius: "25px" ,
-                backgroundColor:'#5fb3a3'
-              }} 
+                borderRadius: "25px",
+                backgroundColor: "#5fb3a3",
+              }}
             >
               Add to Cart
             </button>

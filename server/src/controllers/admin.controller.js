@@ -8,20 +8,27 @@ const {
   deleteProduct,
   updateProduct,
   notifyAdmins,
-  checkoutOrder,
+  checkoutOrderWithPayment,
   getCustomerOrders,
   getNotifications,
   markNotificationRead,
   getAnalyticsSummary,
+  getAnalyticsTrends,
   getRecentSales,
   getTopProducts,
   getLowStock,
   confirmOrder,
+  confirmMobileWalletPayment,
   cancelOrder,
   getAdminNotifications,
   markAdminNotificationRead,
 } = require("../services/admin.service");
 const { signToken } = require("../utils/auth");
+const {
+  sendOrderProcessingEmail,
+  sendOrderCompletedEmail,
+  sendMarketingEmail,
+} = require("../services/email.service");
 
 function createSessionToken(user) {
   return signToken({
@@ -99,13 +106,29 @@ async function loginAdminController(req, res) {
 
 async function checkoutController(req, res) {
   try {
-    const { items } = req.body || {};
-    const result = await checkoutOrder(req.db, req.user.sub, items);
+    const { items, paymentMethod = "cash", paymentDetails } = req.body || {};
+    const result = await checkoutOrderWithPayment(req.db, req.user.sub, {
+      items,
+      paymentMethod,
+      paymentDetails,
+    });
     await notifyAdmins(req.db, {
       type: "order_processing",
       title: "New checkout — confirm payment",
       body: `Order #${result.orderId} from ${req.user.name} (${req.user.email}) is awaiting confirmation.`,
       relatedOrderId: result.orderId,
+    });
+    await sendOrderProcessingEmail({
+      to: req.user.email,
+      name: req.user.name,
+      orderId: result.orderId,
+      total: result.totalAmount,
+    });
+    req.app.locals.io?.emit("order:processing", {
+      orderId: result.orderId,
+      status: "processing",
+      totalAmount: result.totalAmount,
+      paymentMethod: result.paymentMethod,
     });
     res.status(201).json(result);
   } catch (err) {
@@ -114,6 +137,12 @@ async function checkoutController(req, res) {
     }
     if (err.message === "User not found") {
       return res.status(404).json({ error: err.message });
+    }
+    if (
+      err.message === "Unsupported payment method" ||
+      err.message === "phone number, full name, and PIN are required"
+    ) {
+      return res.status(400).json({ error: err.message });
     }
     res.status(500).json({ error: err.message });
   }
@@ -150,6 +179,15 @@ async function getAnalyticsSummaryController(req, res) {
   try {
     const summary = await getAnalyticsSummary(req.db);
     res.json(summary);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+async function getAnalyticsTrendsController(req, res) {
+  try {
+    const trends = await getAnalyticsTrends(req.db);
+    res.json(trends);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -193,8 +231,63 @@ async function confirmOrderController(req, res) {
     if (result.alreadyCompleted) {
       return res.json({ ok: true, message: "Already completed" });
     }
+    const [orows] = await req.db.query(
+      "SELECT customer_email, customer_name FROM orders WHERE id = ?",
+      [orderId],
+    );
+    const order = orows[0];
+    if (order) {
+      await sendOrderCompletedEmail({
+        to: order.customer_email,
+        name: order.customer_name,
+        orderId,
+      });
+    }
+    req.app.locals.io?.emit("order:completed", {
+      orderId,
+      status: "completed",
+    });
     res.json(result);
   } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+async function confirmMobileWalletPaymentController(req, res) {
+  try {
+    const orderId = Number(req.params.id);
+    const result = await confirmMobileWalletPayment(req.db, req.user.sub, orderId);
+    if (!result) {
+      return res.status(404).json({ error: "Order not found" });
+    }
+    if (result.alreadyCompleted) {
+      return res.json({ ok: true, message: "Already completed" });
+    }
+    if (result.alreadyCancelled) {
+      return res.status(409).json({ error: "Order is cancelled" });
+    }
+
+    const [orows] = await req.db.query(
+      "SELECT customer_email, customer_name FROM orders WHERE id = ?",
+      [orderId],
+    );
+    const order = orows[0];
+    if (order) {
+      await sendOrderCompletedEmail({
+        to: order.customer_email,
+        name: order.customer_name,
+        orderId,
+      });
+    }
+    req.app.locals.io?.emit("order:completed", {
+      orderId,
+      status: "completed",
+    });
+    res.json(result);
+  } catch (err) {
+    if (err.message === "Only Telebirr and M-Pesa orders can be confirmed here") {
+      return res.status(400).json({ error: err.message });
+    }
     res.status(500).json({ error: err.message });
   }
 }
@@ -242,11 +335,35 @@ async function addEmployeeController(req, res) {
         .json({ error: "email, password, and name are required" });
     }
     const employee = await createEmployee(req.db, { email, password, name });
+    await sendMarketingEmail({
+      to: employee.email,
+      subject: "Welcome to BK Staff Team",
+      text: `Hello ${employee.name}, your employee account has been created. You can sign in at /admin/signin.`,
+    });
     res.status(201).json(employee);
   } catch (err) {
     if (err.code === "ER_DUP_ENTRY") {
       return res.status(409).json({ error: "Email already exists" });
     }
+    res.status(500).json({ error: err.message });
+  }
+}
+
+async function sendMarketingController(req, res) {
+  try {
+    const { subject, text, onlyOptIn = false } = req.body || {};
+    if (!subject || !text) {
+      return res.status(400).json({ error: "subject and text are required" });
+    }
+    const where = onlyOptIn ? "WHERE role = 'customer' AND marketing_opt_in = 1" : "WHERE role = 'customer'";
+    const [rows] = await req.db.query(`SELECT email FROM users ${where}`);
+    let sent = 0;
+    for (const row of rows) {
+      await sendMarketingEmail({ to: row.email, subject, text });
+      sent += 1;
+    }
+    res.json({ sent });
+  } catch (err) {
     res.status(500).json({ error: err.message });
   }
 }
@@ -260,8 +377,6 @@ async function addProductController(req, res) {
       image_url,
       category_slug,
       stock_quantity,
-      rating,
-      review_count,
       is_best_seller,
       is_featured,
     } = req.body || {};
@@ -277,8 +392,6 @@ async function addProductController(req, res) {
       image_url,
       category_slug,
       stock_quantity,
-      rating,
-      review_count,
       is_best_seller,
       is_featured,
     });
@@ -322,8 +435,6 @@ async function updateProductController(req, res) {
       image_url,
       category_slug,
       stock_quantity,
-      rating,
-      review_count,
       is_best_seller,
       is_featured,
     } = req.body || {};
@@ -339,8 +450,6 @@ async function updateProductController(req, res) {
       image_url,
       category_slug,
       stock_quantity,
-      rating,
-      review_count,
       is_best_seller,
       is_featured,
     });
@@ -363,10 +472,12 @@ module.exports = {
   getNotificationsController,
   markNotificationReadController,
   getAnalyticsSummaryController,
+  getAnalyticsTrendsController,
   getRecentSalesController,
   getTopProductsController,
   getLowStockController,
   confirmOrderController,
+  confirmMobileWalletPaymentController,
   cancelOrderController,
   getAdminNotificationsController,
   markAdminNotificationReadController,
@@ -374,4 +485,5 @@ module.exports = {
   addProductController,
   deleteProductController,
   updateProductController,
+  sendMarketingController,
 };

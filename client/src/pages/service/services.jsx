@@ -13,26 +13,26 @@ const HERO_IMG =
 
 const SERVICES = [
   {
-    title: "Product Consultation",
+    title: "Home Styling Consultation",
     description:
-      "Personalized expert advice on selecting the right tools. Available via video call.",
+      "Personalized advice for building a comfortable, functional, and beautiful home setup.",
     icon: IconHeadset,
   },
   {
-    title: "Culinary Workshops",
+    title: "Room Setup Planning",
     description:
-      "Exclusive cooking classes using BK tools. Led by guest chefs.",
+      "Get help matching storage, decor, lighting, and daily-use essentials for each room.",
     icon: IconChefHat,
   },
   {
     title: "Warranty & Repairs",
     description:
-      "Comprehensive product coverage. Hassle-free repair process managed through the dashboard.",
+      "Coverage and support for appliances, lighting, and selected home equipment purchases.",
     icon: IconShieldCheck,
   },
   {
-    title: "Corporate Gifting",
-    description: "Curated sets and branding options for businesses.",
+    title: "Bulk & Gift Orders",
+    description: "Curated bundles for families, rentals, offices, and housewarming gifts.",
     icon: IconGift,
   },
 ];
@@ -41,7 +41,7 @@ const FAQS = [
   {
     question: "What are the next steps?",
     answer:
-      "Browse our shop or book a consultation. After checkout, you will receive a confirmation email with tracking and any next steps for workshops or warranty registration.",
+      "Browse our store, choose a payment method, and place your order. Mobile-wallet purchases can be confirmed on your phone, while Simple Checkout stays pending until admin approval.",
   },
   {
     question: "What are your shipping options?",
@@ -51,7 +51,7 @@ const FAQS = [
   {
     question: "How do I book a product consultation?",
     answer:
-      "Use the contact form or call our team to schedule a video session. A specialist will review your kitchen goals and recommend the right BK tools.",
+      "Use the contact form or call our team to schedule a session. We can help you choose the right items for your bedroom, living room, kitchen, office, and more.",
   },
   {
     question: "Can I return or exchange an item?",
@@ -85,8 +85,8 @@ const Services = () => {
               </span>
             </h1>
             <p className="mt-5 md:mt-6 text-white/90 text-base md:text-lg max-w-xl mx-auto md:mx-0 font-light">
-              Comprehensive support to bring professional quality to the heart
-              of your home.
+              Comprehensive support for furnishing, organizing, and improving
+              every space in your home.
             </p>
             <Link
               to="/shop"

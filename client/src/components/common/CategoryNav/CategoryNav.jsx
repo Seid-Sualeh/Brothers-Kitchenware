@@ -1,17 +1,14 @@
 import { Link } from "react-router-dom";
 import { FiMenu, FiChevronDown } from "react-icons/fi";
 import { useState } from "react";
+import { STORE_CATEGORIES } from "../../../constants/storeCategories.js";
 
 const DEPTS = [
   { label: "All", path: "/shop" },
-  { label: "Cookware", path: "/category/cookware" },
-  { label: "Dining", path: "/category/dining" },
-  { label: "Gadgets", path: "/category/gadgets" },
-  { label: "Appliances", path: "/category/appliances" },
-  { label: "Cutlery", path: "/category/cutlery" },
-  { label: "Bakeware", path: "/category/bakeware" },
-  { label: "Storage", path: "/category/storage" },
-  { label: "Coffee & Tea", path: "/category/coffee-tea" },
+  ...STORE_CATEGORIES.map((category) => ({
+    label: category.label,
+    path: `/category/${category.slug}`,
+  })),
 ];
 
 export default function CategoryNav() {

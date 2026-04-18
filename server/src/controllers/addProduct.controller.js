@@ -9,8 +9,6 @@ async function addProductController(req, res) {
       image_url,
       category_slug,
       stock_quantity,
-      rating,
-      review_count,
       is_best_seller,
       is_featured,
     } = req.body;
@@ -26,8 +24,6 @@ async function addProductController(req, res) {
       image_url,
       category_slug,
       stock_quantity,
-      rating,
-      review_count,
       is_best_seller,
       is_featured,
     });

@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { FaFacebookF, FaInstagram, FaLinkedinIn, FaYoutube } from "react-icons/fa";
+import { STORE_CATEGORIES } from "../../../constants/storeCategories.js";
 
 const Footer = () => (
   <footer className="bg-[#111] text-gray-400 py-16 md:py-20 px-6 md:px-10">
@@ -19,8 +20,11 @@ const Footer = () => (
             </Link>
           </li>
           <li>
-            <Link to="/category/cookware" className="hover:text-white transition">
-              Cookware
+            <Link
+              to={`/category/${STORE_CATEGORIES[0].slug}`}
+              className="hover:text-white transition"
+            >
+              {STORE_CATEGORIES[0].label}
             </Link>
           </li>
           <li>
@@ -120,7 +124,7 @@ const Footer = () => (
       </div>
     </div>
     <div className="max-w-screen-2xl mx-auto mt-14 pt-8 border-t border-white/10 text-xs text-gray-500">
-      Copyright © Brother&apos;s Kitchenware
+      Copyright © Brother&apos;s Home Goods
     </div>
   </footer>
 );
