@@ -25,7 +25,7 @@ Add these in Netlify dashboard (Site settings > Environment variables):
 
 ```
 NODE_ENV=production
-VITE_API_URL=https://your-backend-url.vercel.app
+VITE_API_URL=https://your-backend-service.onrender.com
 ```
 
 ### 4. Deploy
