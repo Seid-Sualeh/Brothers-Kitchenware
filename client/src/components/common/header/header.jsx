@@ -119,8 +119,6 @@ const Header = () => {
         </NavLink>
       </div>
 
-     
-
       <div className="flex items-center gap-4 md:gap-6 text-black">
         <button
           type="button"
@@ -129,15 +127,17 @@ const Header = () => {
         >
           <FiSearch size={20} strokeWidth={2} />
         </button>
+       
+
         {isLoggedIn ? (
-          <div className="flex items-center gap-2">
-            <span className="text-xs md:text-sm font-semibold text-black">
+          <div className="flex flex-row items-center gap-3 shrink-0">
+            <span className="text-xs md:text-sm font-semibold  whitespace-nowrap text-green-600  ">
               {user?.name || "User"}
             </span>
             <button
               type="button"
               onClick={logout}
-              className="text-xs md:text-sm font-semibold text-black px-2 py-1 rounded-lg hover:bg-black/[0.04] transition-colors"
+              className="text-xs md:text-sm font-bold text-red-600 px-2 py-1 rounded-lg hover:bg-red-50 transition-colors whitespace-nowrap"
             >
               Logout
             </button>
@@ -151,6 +151,7 @@ const Header = () => {
             <FiUser size={20} strokeWidth={2} />
           </Link>
         )}
+
         <Link
           to="/cart"
           className="relative p-2 rounded-lg text-black hover:bg-black/[0.04] transition-colors"
