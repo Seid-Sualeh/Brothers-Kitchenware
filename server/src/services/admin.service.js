@@ -79,7 +79,10 @@ async function loginAdmin(db, { email, password }) {
   };
 }
 
-async function createEmployee(db, { email, password, name, role = 'employee' }) {
+async function createEmployee(
+  db,
+  { email, password, name, role = "employee" },
+) {
   const hash = bcrypt.hashSync(password, 10);
   const normalizedEmail = normalizeEmail(email);
   const [result] = await db.query(
@@ -215,7 +218,11 @@ async function checkoutOrderWithPayment(
 
     if (method === "telebirr" || method === "mpesa") {
       const mobileDetails = sanitizeMobilePaymentDetails(paymentDetails);
-      if (!mobileDetails.phoneNumber || !mobileDetails.fullName || !mobileDetails.pin) {
+      if (
+        !mobileDetails.phoneNumber ||
+        !mobileDetails.fullName ||
+        !mobileDetails.pin
+      ) {
         throw new Error("phone number, full name, and PIN are required");
       }
     }
@@ -277,10 +284,10 @@ async function checkoutOrderWithPayment(
         JSON.stringify(payment.raw || {}),
       ],
     );
-    await conn.query(
-      "UPDATE orders SET payment_reference = ? WHERE id = ?",
-      [payment.reference, orderId],
-    );
+    await conn.query("UPDATE orders SET payment_reference = ? WHERE id = ?", [
+      payment.reference,
+      orderId,
+    ]);
 
     for (const item of items) {
       await conn.query(
