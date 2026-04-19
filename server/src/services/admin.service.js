@@ -66,11 +66,10 @@ async function loginAdmin(db, { email, password }) {
   if (!user || (user.role !== "admin" && user.role !== "employee")) {
     return null;
   }
-  // Temporarily disable password check for debugging
-  // const isValid = bcrypt.compareSync(password, user.password_hash);
-  // if (!isValid) {
-  //   return null;
-  // }
+  const isValid = bcrypt.compareSync(password, user.password_hash);
+  if (!isValid) {
+    return null;
+  }
   return {
     id: user.id,
     email: user.email,
