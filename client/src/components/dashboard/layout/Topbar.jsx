@@ -4,11 +4,17 @@ import {
   IconBell,
   IconLayoutSidebarLeftExpand,
   IconLayoutSidebarLeftCollapse,
+  IconX,
 } from "@tabler/icons-react";
 import { adminApi } from "../../../lib/adminApi.js";
 import { useAdminAuth } from "../../../context/AdminAuthContext";
 
-export const Topbar = ({ onToggleSidebar, onMobileMenu, sidebarCollapsed }) => {
+export const Topbar = ({
+  onToggleSidebar,
+  onMobileMenu,
+  sidebarCollapsed,
+  mobileMenuOpen,
+}) => {
   const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -49,13 +55,35 @@ export const Topbar = ({ onToggleSidebar, onMobileMenu, sidebarCollapsed }) => {
   };
 
   return (
-    <nav id="topbar" className={`topbar d-flex align-items-center px-3 ${sidebarCollapsed ? "full" : ""}`}>
-      <button id="toggleBtn" className="btn btn-light btn-icon btn-sm me-2" type="button" onClick={onToggleSidebar}>
-        {sidebarCollapsed ? <IconLayoutSidebarLeftCollapse size={18} /> : <IconLayoutSidebarLeftExpand size={18} />}
+    <nav
+      id="topbar"
+      className={`topbar d-flex align-items-center px-3 ${sidebarCollapsed ? "full" : ""}`}
+    >
+      <button
+        id="toggleBtn"
+        className="btn btn-light btn-icon btn-sm me-2"
+        type="button"
+        onClick={onToggleSidebar}
+      >
+        {sidebarCollapsed ? (
+          <IconLayoutSidebarLeftCollapse size={18} />
+        ) : (
+          <IconLayoutSidebarLeftExpand size={18} />
+        )}
       </button>
 
-      <button id="mobileBtn" className="btn btn-light btn-icon btn-sm me-2" type="button" onClick={onMobileMenu}>
-        <IconLayoutSidebarLeftExpand size={18} />
+      <button
+        id="mobileBtn"
+        className="btn btn-light btn-icon btn-sm me-2"
+        type="button"
+        onClick={onMobileMenu}
+        aria-label={mobileMenuOpen ? "Close sidebar" : "Open sidebar"}
+      >
+        {mobileMenuOpen ? (
+          <IconX size={18} />
+        ) : (
+          <IconLayoutSidebarLeftExpand size={18} />
+        )}
       </button>
 
       <div className="d-flex align-items-center gap-1 ms-auto">
@@ -81,11 +109,22 @@ export const Topbar = ({ onToggleSidebar, onMobileMenu, sidebarCollapsed }) => {
               {showNotifications && (
                 <div
                   className="dropdown-menu dropdown-menu-end show p-0 shadow"
-                  style={{ minWidth: 320, position: "absolute", top: "100%", right: 0, zIndex: 1000 }}
+                  style={{
+                    minWidth: 320,
+                    position: "absolute",
+                    top: "100%",
+                    right: 0,
+                    zIndex: 1000,
+                  }}
                 >
-                  <ul className="list-unstyled p-0 m-0" style={{ maxHeight: 360, overflowY: "auto" }}>
+                  <ul
+                    className="list-unstyled p-0 m-0"
+                    style={{ maxHeight: 360, overflowY: "auto" }}
+                  >
                     {notifications.length === 0 && (
-                      <li className="p-3 text-muted small">No notifications yet.</li>
+                      <li className="p-3 text-muted small">
+                        No notifications yet.
+                      </li>
                     )}
                     {notifications.map((notif) => (
                       <li key={notif.id} className="p-3 border-bottom">
@@ -96,11 +135,20 @@ export const Topbar = ({ onToggleSidebar, onMobileMenu, sidebarCollapsed }) => {
                             if (!notif.read_at) markRead(notif.id);
                           }}
                         >
-                          <p className="mb-0 fw-semibold small">{notif.title}</p>
-                          <p className="mb-1 small text-secondary">{notif.body}</p>
-                          <div className="text-secondary" style={{ fontSize: "0.75rem" }}>
+                          <p className="mb-0 fw-semibold small">
+                            {notif.title}
+                          </p>
+                          <p className="mb-1 small text-secondary">
+                            {notif.body}
+                          </p>
+                          <div
+                            className="text-secondary"
+                            style={{ fontSize: "0.75rem" }}
+                          >
                             {fmtTime(notif.created_at)}
-                            {!notif.read_at && <span className="badge bg-primary ms-2">New</span>}
+                            {!notif.read_at && (
+                              <span className="badge bg-primary ms-2">New</span>
+                            )}
                           </div>
                         </button>
                       </li>
@@ -111,18 +159,32 @@ export const Topbar = ({ onToggleSidebar, onMobileMenu, sidebarCollapsed }) => {
             </div>
 
             <div className="dropdown ms-3" style={{ position: "relative" }}>
-              <button type="button" className="btn btn-light btn-sm" onClick={() => setShowUserMenu(!showUserMenu)}>
+              <button
+                type="button"
+                className="btn btn-light btn-sm"
+                onClick={() => setShowUserMenu(!showUserMenu)}
+              >
                 {staff.name}
               </button>
 
               {showUserMenu && (
                 <div
                   className="dropdown-menu dropdown-menu-end show p-0 shadow"
-                  style={{ position: "absolute", top: "100%", right: 0, zIndex: 1000, minWidth: 200 }}
+                  style={{
+                    position: "absolute",
+                    top: "100%",
+                    right: 0,
+                    zIndex: 1000,
+                    minWidth: 200,
+                  }}
                 >
-                  <div className="px-3 py-2 border-bottom small text-muted">{staff.email}</div>
+                  <div className="px-3 py-2 border-bottom small text-muted">
+                    {staff.email}
+                  </div>
                   <div className="p-2">
-                    <span className="badge bg-secondary text-uppercase">{staff.role}</span>
+                    <span className="badge bg-secondary text-uppercase">
+                      {staff.role}
+                    </span>
                   </div>
                   <button
                     type="button"

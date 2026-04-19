@@ -9,19 +9,46 @@ import {
 import { useAdminAuth } from "../../../context/AdminAuthContext";
 
 const ALL_NAV = [
-  { name: "Dashboard", icon: IconHome, path: "/admin/dashboard", roles: ["admin"] },
-  { name: "Inventory", icon: IconBox, path: "/admin/inventory", roles: ["admin", "employee"] },
-  { name: "Add Product", icon: IconPlus, path: "/admin/create-product", roles: ["admin", "employee"] },
-  { name: "Add Employee", icon: IconUser, path: "/admin/add-employee", roles: ["admin"] },
-  { name: "Reports", icon: IconReceipt, path: "/admin/reports", roles: ["admin", "employee"] },
+  {
+    name: "Dashboard",
+    icon: IconHome,
+    path: "/admin/dashboard",
+    roles: ["admin"],
+  },
+  {
+    name: "Inventory",
+    icon: IconBox,
+    path: "/admin/inventory",
+    roles: ["admin", "employee"],
+  },
+  {
+    name: "Add Product",
+    icon: IconPlus,
+    path: "/admin/create-product",
+    roles: ["admin", "employee"],
+  },
+  {
+    name: "Add Employee",
+    icon: IconUser,
+    path: "/admin/add-employee",
+    roles: ["admin"],
+  },
+  {
+    name: "Reports",
+    icon: IconReceipt,
+    path: "/admin/reports",
+    roles: ["admin", "employee"],
+  },
 ];
 
-export const Sidebar = ({ collapsed, mobileShow }) => {
+export const Sidebar = ({ collapsed, mobileShow, onClose }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { staff, adminLogout } = useAdminAuth();
 
-  const navItems = staff ? ALL_NAV.filter((item) => item.roles.includes(staff.role)) : ALL_NAV;
+  const navItems = staff
+    ? ALL_NAV.filter((item) => item.roles.includes(staff.role))
+    : ALL_NAV;
 
   const handleLogout = () => {
     adminLogout();
@@ -35,7 +62,12 @@ export const Sidebar = ({ collapsed, mobileShow }) => {
       style={{ left: 0 }}
     >
       <div className="logo-area">
-        <Link to={staff?.role === "employee" ? "/admin/inventory" : "/admin/dashboard"} className="d-inline-flex">
+        <Link
+          to={
+            staff?.role === "employee" ? "/admin/inventory" : "/admin/dashboard"
+          }
+          className="d-inline-flex"
+        >
           {/* <img src="/logo-icon.svg" alt="" width="24" />
           {!collapsed && (
             <span className="logo-text ms-2">
@@ -44,12 +76,12 @@ export const Sidebar = ({ collapsed, mobileShow }) => {
           )} */}
 
           <Link
-                  to="/"
-                  className="text-2xl md:text-3xl font-display font-black text-[#1a1f1e] tracking-tight shrink-0 hover:opacity-90 transition-opacity"
-                  aria-label="Brothers Home Goods home"
-                >
-                  B<span className="text-[#2d6a6a]">K</span>
-                </Link>
+            to="/"
+            className="text-2xl md:text-3xl font-display font-black text-[#1a1f1e] tracking-tight shrink-0 hover:opacity-90 transition-opacity"
+            aria-label="Brothers Home Goods home"
+          >
+            B<span className="text-[#2d6a6a]">K</span>
+          </Link>
         </Link>
       </div>
       <ul className="nav flex-column mt-4">
@@ -61,6 +93,7 @@ export const Sidebar = ({ collapsed, mobileShow }) => {
             <Link
               to={item.path}
               className={`nav-link ${location.pathname === item.path ? "active" : ""}`}
+              onClick={() => mobileShow && onClose?.()}
             >
               <item.icon size={18} />
               <span className="nav-text">{item.name}</span>
@@ -73,7 +106,14 @@ export const Sidebar = ({ collapsed, mobileShow }) => {
         </li>
         {staff ? (
           <li>
-            <button type="button" className="nav-link btn btn-link text-start w-100 border-0 p-0 ps-4" onClick={handleLogout}>
+            <button
+              type="button"
+              className="nav-link btn btn-link text-start w-100 border-0 p-0 ps-4"
+              onClick={() => {
+                handleLogout();
+                if (mobileShow) onClose?.();
+              }}
+            >
               <span className="nav-text text-danger">Log out</span>
             </button>
           </li>

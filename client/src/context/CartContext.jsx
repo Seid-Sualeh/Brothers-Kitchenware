@@ -1,10 +1,16 @@
 import { createContext, useContext, useReducer, useEffect } from "react";
+import { useAuth } from "./AuthContext";
 
 const CartContext = createContext();
 
-const getLocalStorage = () => {
+const getCartKey = (user) => {
+  const id = user?.id || user?.email;
+  return id ? `cart:${id}` : "cart:guest";
+};
+
+const getLocalStorage = (key) => {
   try {
-    const cart = JSON.parse(localStorage.getItem("cart"));
+    const cart = JSON.parse(localStorage.getItem(key));
     return Array.isArray(cart) ? cart : [];
   } catch {
     return [];
@@ -42,11 +48,20 @@ const cartReducer = (state, action) => {
 };
 
 export const CartProvider = ({ children }) => {
-  const [cart, dispatch] = useReducer(cartReducer, [], () => getLocalStorage());
+  const { user } = useAuth();
+  const cartKey = getCartKey(user);
+
+  const [cart, dispatch] = useReducer(cartReducer, [], () =>
+    getLocalStorage(cartKey),
+  );
 
   useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cart));
-  }, [cart]);
+    localStorage.setItem(cartKey, JSON.stringify(cart));
+  }, [cart, cartKey]);
+
+  useEffect(() => {
+    dispatch({ type: "INITIALIZE_CART", payload: getLocalStorage(cartKey) });
+  }, [cartKey]);
 
   const addToCart = (product) =>
     dispatch({ type: "ADD_TO_CART", payload: product });
