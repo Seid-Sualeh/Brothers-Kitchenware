@@ -78,19 +78,26 @@ async function loginAdmin(db, { email, password }) {
   };
 }
 
-async function createEmployee(db, { email, password, name }) {
+async function createEmployee(db, { email, password, name, role = 'employee' }) {
   const hash = bcrypt.hashSync(password, 10);
   const normalizedEmail = normalizeEmail(email);
   const [result] = await db.query(
-    "INSERT INTO users (email, password_hash, name, role) VALUES (?, ?, ?, 'employee')",
-    [normalizedEmail, hash, name.trim()],
+    "INSERT INTO users (email, password_hash, name, role) VALUES (?, ?, ?, ?)",
+    [normalizedEmail, hash, name.trim(), role],
   );
   return {
     id: result.insertId,
     email: normalizedEmail,
     name: name.trim(),
-    role: "employee",
+    role,
   };
+}
+
+async function getEmployees(db) {
+  const [rows] = await db.query(
+    "SELECT id, email, name, role FROM users WHERE role IN ('employee', 'admin') ORDER BY id",
+  );
+  return rows;
 }
 
 async function createProduct(db, productData) {
@@ -642,6 +649,7 @@ module.exports = {
   getUserById,
   loginAdmin,
   createEmployee,
+  getEmployees,
   createProduct,
   deleteProduct,
   updateProduct,

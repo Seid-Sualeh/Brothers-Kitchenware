@@ -2,9 +2,10 @@ const {
   createCustomer,
   loginCustomer,
   getUserById,
-  loginAdmin,
-  createEmployee,
-  createProduct,
+   loginAdmin,
+   createEmployee,
+   getEmployees,
+   createProduct,
   deleteProduct,
   updateProduct,
   notifyAdmins,
@@ -328,13 +329,13 @@ async function markAdminNotificationReadController(req, res) {
 
 async function addEmployeeController(req, res) {
   try {
-    const { email, password, name } = req.body || {};
+    const { email, password, name, role = 'employee' } = req.body || {};
     if (!email || !password || !name) {
       return res
         .status(400)
         .json({ error: "email, password, and name are required" });
     }
-    const employee = await createEmployee(req.db, { email, password, name });
+    const employee = await createEmployee(req.db, { email, password, name, role });
     await sendMarketingEmail({
       to: employee.email,
       subject: "Welcome to BK Staff Team",
@@ -345,6 +346,15 @@ async function addEmployeeController(req, res) {
     if (err.code === "ER_DUP_ENTRY") {
       return res.status(409).json({ error: "Email already exists" });
     }
+    res.status(500).json({ error: err.message });
+  }
+}
+
+async function getEmployeesController(req, res) {
+  try {
+    const employees = await getEmployees(req.db);
+    res.json(employees);
+  } catch (err) {
     res.status(500).json({ error: err.message });
   }
 }
@@ -481,8 +491,9 @@ module.exports = {
   cancelOrderController,
   getAdminNotificationsController,
   markAdminNotificationReadController,
-  addEmployeeController,
-  addProductController,
+   addEmployeeController,
+   getEmployeesController,
+   addProductController,
   deleteProductController,
   updateProductController,
   sendMarketingController,

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { IconEye, IconEyeOff } from '@tabler/icons-react';
 import { DashboardLayout } from '../../../components/dashboard/layout/DashboardLayout';
 import { adminApi } from '../../../lib/adminApi.js';
+import { showSuccessToast, showErrorToast } from '../../../lib/toast.js';
 
 const AddEmployee = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -33,11 +34,15 @@ const AddEmployee = () => {
         name,
         email: formData.email.trim(),
         password: formData.password,
+        role: formData.role,
       });
-      setMsg('Employee created. They can sign in at /admin/signin with role employee.');
+      showSuccessToast(`${formData.role === 'admin' ? 'Admin' : 'Employee'} created successfully. They can sign in at /admin/signin.`);
+      setMsg(`${formData.role === 'admin' ? 'Admin' : 'Employee'} created. They can sign in at /admin/signin with role ${formData.role}.`);
       setFormData({ firstName: '', lastName: '', phone: '', email: '', password: '', role: '' });
     } catch (er) {
-      setErr(er.response?.data?.error || 'Could not create employee.');
+      const errorMessage = er.response?.data?.error || 'Could not create employee.';
+      showErrorToast(errorMessage);
+      setErr(errorMessage);
     }
   };
 

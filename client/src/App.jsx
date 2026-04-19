@@ -6,6 +6,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
+import { ToastContainer } from "react-toastify";
 import { CartProvider } from "./context/CartContext";
 import { AuthProvider } from "./context/AuthContext";
 import { AdminAuthProvider } from "./context/AdminAuthContext";
@@ -41,6 +42,18 @@ const staffRoutes = ["admin", "employee"];
 function App() {
   return (
     <HelmetProvider>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       <Router>
         <ScrollToTop />
         <AuthProvider>
