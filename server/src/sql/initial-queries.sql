@@ -164,9 +164,9 @@ CREATE TABLE IF NOT EXISTS payment_returns (
 
 -- Seed data
 INSERT INTO users (email, password_hash, name, role) VALUES
-('admin@bk.com', '$2b$10$N4IxbB6ZgIWeieR9Nkkf8u/5DB9aBn43.c3vWU60EmXq0sagbzEnm', 'BK Admin', 'admin'),
-('employee@bk.com', '$2b$10$J.AI8gF7o0sR8DQ8bbHTlOKX3fxPqeTD0.uE5RMOQsUGtheQ6RGMS', 'BK Employee', 'employee'),
-('customer@test.com', '$2b$10$tVZMnpXHQcpveFU1mQW61eBsaqVm/81TCgqmSxTYvZwHm8yxV/Vne', 'Test Customer', 'customer')
+('admin@bk.com', '$2b$10$5Q.TST2U/hUx.6yuV1rBhu6oO56/b.UFAJa60.OOOqOEcqw455AUC', 'BK Admin', 'admin'),
+('employee@bk.com', '$2b$10$DoaLJT/xI.5p8pmzpjX7O.k2U0JOcEi5/ysYTwWciM78.RGpATlhm', 'BK Employee', 'employee'),
+('customer@test.com', '$2b$10$clgDYZT/ntkuUJ475FqUpOdOVOz9Vtw2P.j7V4shS/yNO7dX2i9RC', 'Test Customer', 'customer')
 ON DUPLICATE KEY UPDATE email = email;
 
 -- Categories: prepare, eat, store, appliances & electronics, plus bakeware and gadgets
