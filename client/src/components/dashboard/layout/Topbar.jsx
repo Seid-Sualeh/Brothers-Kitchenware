@@ -4,17 +4,11 @@ import {
   IconBell,
   IconLayoutSidebarLeftExpand,
   IconLayoutSidebarLeftCollapse,
-  IconX,
 } from "@tabler/icons-react";
 import { adminApi } from "../../../lib/adminApi.js";
 import { useAdminAuth } from "../../../context/AdminAuthContext";
 
-export const Topbar = ({
-  onToggleSidebar,
-  onMobileMenu,
-  sidebarCollapsed,
-  mobileMenuOpen,
-}) => {
+export const Topbar = ({ onToggleSidebar, sidebarCollapsed }) => {
   const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -67,20 +61,6 @@ export const Topbar = ({
       >
         {sidebarCollapsed ? (
           <IconLayoutSidebarLeftCollapse size={18} />
-        ) : (
-          <IconLayoutSidebarLeftExpand size={18} />
-        )}
-      </button>
-
-      <button
-        id="mobileBtn"
-        className="btn btn-light btn-icon btn-sm me-2"
-        type="button"
-        onClick={onMobileMenu}
-        aria-label={mobileMenuOpen ? "Close sidebar" : "Open sidebar"}
-      >
-        {mobileMenuOpen ? (
-          <IconX size={18} />
         ) : (
           <IconLayoutSidebarLeftExpand size={18} />
         )}

@@ -31,7 +31,7 @@ const ALL_NAV = [
     name: "Add Employee",
     icon: IconUser,
     path: "/admin/add-employee",
-    roles: ["admin"],
+    roles: ["admin", "employee"],
   },
   {
     name: "Reports",
@@ -41,7 +41,7 @@ const ALL_NAV = [
   },
 ];
 
-export const Sidebar = ({ collapsed, mobileShow, onClose }) => {
+export const Sidebar = ({ collapsed, onClose }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { staff, adminLogout } = useAdminAuth();
@@ -58,7 +58,7 @@ export const Sidebar = ({ collapsed, mobileShow, onClose }) => {
   return (
     <aside
       id="sidebar"
-      className={`sidebar ${collapsed ? "collapsed" : ""} ${mobileShow ? "mobile-show" : ""}`}
+      className={`sidebar ${collapsed ? "collapsed" : ""}`}
       style={{ left: 0 }}
     >
       <div className="logo-area">
@@ -66,22 +66,10 @@ export const Sidebar = ({ collapsed, mobileShow, onClose }) => {
           to={
             staff?.role === "employee" ? "/admin/inventory" : "/admin/dashboard"
           }
-          className="d-inline-flex"
+          className="d-inline-flex text-2xl md:text-3xl font-display font-black text-[#1a1f1e] tracking-tight shrink-0 hover:opacity-90 transition-opacity"
+          aria-label="Brothers Home Goods home"
         >
-          {/* <img src="/logo-icon.svg" alt="" width="24" />
-          {!collapsed && (
-            <span className="logo-text ms-2">
-              <img src="/logo.svg" alt="" />
-            </span>
-          )} */}
-
-          <Link
-            to="/"
-            className="text-2xl md:text-3xl font-display font-black text-[#1a1f1e] tracking-tight shrink-0 hover:opacity-90 transition-opacity"
-            aria-label="Brothers Home Goods home"
-          >
-            B<span className="text-[#2d6a6a]">K</span>
-          </Link>
+          B<span className="text-[#2d6a6a]">K</span>
         </Link>
       </div>
       <ul className="nav flex-column mt-4">
@@ -93,7 +81,7 @@ export const Sidebar = ({ collapsed, mobileShow, onClose }) => {
             <Link
               to={item.path}
               className={`nav-link ${location.pathname === item.path ? "active" : ""}`}
-              onClick={() => mobileShow && onClose?.()}
+              onClick={() => onClose?.()}
             >
               <item.icon size={18} />
               <span className="nav-text">{item.name}</span>
@@ -111,7 +99,7 @@ export const Sidebar = ({ collapsed, mobileShow, onClose }) => {
               className="nav-link btn btn-link text-start w-100 border-0 p-0 ps-4"
               onClick={() => {
                 handleLogout();
-                if (mobileShow) onClose?.();
+                onClose?.();
               }}
             >
               <span className="nav-text text-danger">Log out</span>

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { IconEye, IconEyeOff } from "@tabler/icons-react";
 import { useAuth } from "../../context/AuthContext";
-import { api } from "../../lib/api.js";
+import { showSuccessToast, showErrorToast } from "../../lib/toast.js";
 
 const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);

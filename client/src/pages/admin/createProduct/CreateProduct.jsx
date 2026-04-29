@@ -132,7 +132,9 @@ const CreateProduct = () => {
               <p className="mb-0">Manage your product inventory</p>
             </div>
             <div>
-              <Link to="/admin/inventory" className="btn btn-primary">
+              <Link to="/admin/inventory" className="btn btn-primary"
+               
+              >
                 Go to Inventory List
               </Link>
             </div>
@@ -282,7 +284,7 @@ const CreateProduct = () => {
                   </button>
                   <button
                     type="reset"
-                    className="btn btn-secondary"
+                    className="btn btn-light  rounded-pill mt-4 px-5 py-2  fw-bold shadow-lg"
                     onClick={handleReset}
                   >
                     Clear

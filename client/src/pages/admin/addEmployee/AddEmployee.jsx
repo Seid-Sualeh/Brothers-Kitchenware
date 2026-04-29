@@ -1,46 +1,58 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { IconEye, IconEyeOff } from '@tabler/icons-react';
-import { DashboardLayout } from '../../../components/dashboard/layout/DashboardLayout';
-import { adminApi } from '../../../lib/adminApi.js';
-import { showSuccessToast, showErrorToast } from '../../../lib/toast.js';
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { IconEye, IconEyeOff } from "@tabler/icons-react";
+import { DashboardLayout } from "../../../components/dashboard/layout/DashboardLayout";
+import { adminApi } from "../../../lib/adminApi.js";
+import { showSuccessToast, showErrorToast } from "../../../lib/toast.js";
 
 const AddEmployee = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    phone: '',
-    email: '',
-    password: '',
-    role: '',
+    firstName: "",
+    lastName: "",
+    phone: "",
+    email: "",
+    password: "",
+    role: "",
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const [msg, setMsg] = useState('');
-  const [err, setErr] = useState('');
+  const [msg, setMsg] = useState("");
+  const [err, setErr] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setMsg('');
-    setErr('');
+    setMsg("");
+    setErr("");
     try {
       const name = `${formData.firstName} ${formData.lastName}`.trim();
-      await adminApi.post('/api/admin/employees', {
+      await adminApi.post("/api/admin/employees", {
         name,
         email: formData.email.trim(),
         password: formData.password,
         role: formData.role,
       });
-      showSuccessToast(`${formData.role === 'admin' ? 'Admin' : 'Employee'} created successfully. They can sign in at /admin/signin.`);
-      setMsg(`${formData.role === 'admin' ? 'Admin' : 'Employee'} created. They can sign in at /admin/signin with role ${formData.role}.`);
-      setFormData({ firstName: '', lastName: '', phone: '', email: '', password: '', role: '' });
+      showSuccessToast(
+        `${formData.role === "admin" ? "Admin" : "Employee"} created successfully. They can sign in at /admin/signin.`,
+      );
+      setMsg(
+        `${formData.role === "admin" ? "Admin" : "Employee"} created. They can sign in at /admin/signin with role ${formData.role}.`,
+      );
+      setFormData({
+        firstName: "",
+        lastName: "",
+        phone: "",
+        email: "",
+        password: "",
+        role: "",
+      });
     } catch (er) {
-      const errorMessage = er.response?.data?.error || 'Could not create employee.';
+      const errorMessage =
+        er.response?.data?.error || "Could not create employee.";
       showErrorToast(errorMessage);
       setErr(errorMessage);
     }
@@ -50,23 +62,29 @@ const AddEmployee = () => {
     <DashboardLayout>
       <div className="row">
         <div className="col-12">
-          <div className="mb-8">
+          <div className="my-10">
             <h1 className="fs-3 mb-1">Add Employee</h1>
             <p className="text-muted">Create a new employee account</p>
-            {msg && <div className="alert alert-success mt-2 py-2 small">{msg}</div>}
-            {err && <div className="alert alert-danger mt-2 py-2 small">{err}</div>}
+            {msg && (
+              <div className="alert alert-success mt-2 py-2 small">{msg}</div>
+            )}
+            {err && (
+              <div className="alert alert-danger mt-2 py-2 small">{err}</div>
+            )}
           </div>
         </div>
       </div>
 
       <div className="row">
-        <div className="col-lg-6 col-12">
+        <div className=" col-12">
           <div className="card">
             <div className="card-body p-4">
               <form onSubmit={handleSubmit}>
                 <div className="row g-3 mb-3">
                   <div className="col-6">
-                    <label htmlFor="firstName" className="form-label">First Name</label>
+                    <label htmlFor="firstName" className="form-label">
+                      First Name
+                    </label>
                     <input
                       id="firstName"
                       name="firstName"
@@ -79,7 +97,9 @@ const AddEmployee = () => {
                     />
                   </div>
                   <div className="col-6">
-                    <label htmlFor="lastName" className="form-label">Last Name</label>
+                    <label htmlFor="lastName" className="form-label">
+                      Last Name
+                    </label>
                     <input
                       id="lastName"
                       name="lastName"
@@ -94,7 +114,9 @@ const AddEmployee = () => {
                 </div>
 
                 <div className="mb-3">
-                  <label htmlFor="phone" className="form-label">Phone Number</label>
+                  <label htmlFor="phone" className="form-label">
+                    Phone Number
+                  </label>
                   <input
                     id="phone"
                     name="phone"
@@ -108,7 +130,9 @@ const AddEmployee = () => {
                 </div>
 
                 <div className="mb-3">
-                  <label htmlFor="email" className="form-label">Email Address</label>
+                  <label htmlFor="email" className="form-label">
+                    Email Address
+                  </label>
                   <input
                     id="email"
                     name="email"
@@ -122,12 +146,14 @@ const AddEmployee = () => {
                 </div>
 
                 <div className="mb-3">
-                  <label htmlFor="password" className="form-label">Password</label>
+                  <label htmlFor="password" className="form-label">
+                    Password
+                  </label>
                   <div className="input-group">
                     <input
                       id="password"
                       name="password"
-                      type={showPassword ? 'text' : 'password'}
+                      type={showPassword ? "text" : "password"}
                       className="form-control"
                       placeholder="Create a password"
                       required
@@ -140,13 +166,19 @@ const AddEmployee = () => {
                       className="btn btn-light"
                       onClick={() => setShowPassword(!showPassword)}
                     >
-                      {showPassword ? <IconEyeOff size={18} /> : <IconEye size={18} />}
+                      {showPassword ? (
+                        <IconEyeOff size={18} />
+                      ) : (
+                        <IconEye size={18} />
+                      )}
                     </button>
                   </div>
                 </div>
 
                 <div className="mb-4">
-                  <label htmlFor="role" className="form-label">Role</label>
+                  <label htmlFor="role" className="form-label">
+                    Role
+                  </label>
                   <select
                     id="role"
                     name="role"
@@ -162,10 +194,30 @@ const AddEmployee = () => {
                 </div>
 
                 <div className="d-flex gap-2">
-                  <button className="btn btn-primary" type="submit">
+                  <button
+                    className="btn rounded-pill mt-4 px-5 py-2 text-uppercase fw-bold shadow-lg"
+                    style={{
+                      backgroundColor: "#5fb3a3",
+                      borderColor: "#5fb3a3",
+                      color: "black",
+                      letterSpacing: "0.1em",
+                      fontSize: "0.875rem",
+                    }}
+                    onMouseOver={(e) =>
+                      (e.currentTarget.style.backgroundColor = "#4fa08f")
+                    }
+                    onMouseOut={(e) =>
+                      (e.currentTarget.style.backgroundColor = "#5fb3a3")
+                    }
+                    type="submit"
+                  >
                     Add Employee
                   </button>
-                  <Link to="/admin/dashboard" className="btn btn-light">
+
+                  <Link
+                    to="/admin/dashboard"
+                    className="btn btn-light  rounded-pill mt-4 px-5 py-2  fw-bold shadow-lg"
+                  >
                     Cancel
                   </Link>
                 </div>

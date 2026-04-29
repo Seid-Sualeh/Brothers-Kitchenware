@@ -20,9 +20,9 @@ const {
   cancelOrderController,
   getAdminNotificationsController,
   markAdminNotificationReadController,
-   addEmployeeController,
-   getEmployeesController,
-   addProductController,
+  addEmployeeController,
+  getEmployeesController,
+  addProductController,
   deleteProductController,
   updateProductController,
   sendMarketingController,
@@ -39,7 +39,9 @@ module.exports = function createAdminRouter(getCtx) {
   // Temporary debug endpoint - remove after fixing
   router.get("/debug/users", requireDb, async (req, res) => {
     try {
-      const [users] = await req.db.query("SELECT id, email, name, role FROM users");
+      const [users] = await req.db.query(
+        "SELECT id, email, name, role FROM users",
+      );
       res.json({ users });
     } catch (err) {
       res.status(500).json({ error: err.message });
@@ -126,13 +128,7 @@ module.exports = function createAdminRouter(getCtx) {
     markAdminNotificationReadController,
   );
 
-  router.post(
-    "/admin/employees",
-    requireDb,
-    authStaff,
-    requireAdmin,
-    addEmployeeController,
-  );
+  router.post("/admin/employees", requireDb, authStaff, addEmployeeController);
   router.post(
     "/admin/marketing/send",
     requireDb,

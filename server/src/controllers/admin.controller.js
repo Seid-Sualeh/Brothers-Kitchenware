@@ -2,10 +2,10 @@ const {
   createCustomer,
   loginCustomer,
   getUserById,
-   loginAdmin,
-   createEmployee,
-   getEmployees,
-   createProduct,
+  loginAdmin,
+  createEmployee,
+  getEmployees,
+  createProduct,
   deleteProduct,
   updateProduct,
   notifyAdmins,
@@ -257,7 +257,11 @@ async function confirmOrderController(req, res) {
 async function confirmMobileWalletPaymentController(req, res) {
   try {
     const orderId = Number(req.params.id);
-    const result = await confirmMobileWalletPayment(req.db, req.user.sub, orderId);
+    const result = await confirmMobileWalletPayment(
+      req.db,
+      req.user.sub,
+      orderId,
+    );
     if (!result) {
       return res.status(404).json({ error: "Order not found" });
     }
@@ -286,7 +290,9 @@ async function confirmMobileWalletPaymentController(req, res) {
     });
     res.json(result);
   } catch (err) {
-    if (err.message === "Only Telebirr and M-Pesa orders can be confirmed here") {
+    if (
+      err.message === "Only Telebirr and M-Pesa orders can be confirmed here"
+    ) {
       return res.status(400).json({ error: err.message });
     }
     res.status(500).json({ error: err.message });
@@ -329,13 +335,25 @@ async function markAdminNotificationReadController(req, res) {
 
 async function addEmployeeController(req, res) {
   try {
-    const { email, password, name, role = 'employee' } = req.body || {};
+    const { email, password, name } = req.body || {};
+    let { role = "employee" } = req.body || {};
+
     if (!email || !password || !name) {
       return res
         .status(400)
         .json({ error: "email, password, and name are required" });
     }
-    const employee = await createEmployee(req.db, { email, password, name, role });
+
+    if (role !== "admin" && role !== "employee") {
+      role = "employee";
+    }
+
+    const employee = await createEmployee(req.db, {
+      email,
+      password,
+      name,
+      role,
+    });
     await sendMarketingEmail({
       to: employee.email,
       subject: "Welcome to BK Staff Team",
@@ -365,7 +383,9 @@ async function sendMarketingController(req, res) {
     if (!subject || !text) {
       return res.status(400).json({ error: "subject and text are required" });
     }
-    const where = onlyOptIn ? "WHERE role = 'customer' AND marketing_opt_in = 1" : "WHERE role = 'customer'";
+    const where = onlyOptIn
+      ? "WHERE role = 'customer' AND marketing_opt_in = 1"
+      : "WHERE role = 'customer'";
     const [rows] = await req.db.query(`SELECT email FROM users ${where}`);
     let sent = 0;
     for (const row of rows) {
@@ -491,9 +511,9 @@ module.exports = {
   cancelOrderController,
   getAdminNotificationsController,
   markAdminNotificationReadController,
-   addEmployeeController,
-   getEmployeesController,
-   addProductController,
+  addEmployeeController,
+  getEmployeesController,
+  addProductController,
   deleteProductController,
   updateProductController,
   sendMarketingController,
