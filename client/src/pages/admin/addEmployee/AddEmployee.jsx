@@ -226,6 +226,17 @@ const AddEmployee = () => {
           </div>
         </div>
       </div>
+
+      <div className="row">
+        <div className="col-12">
+          <footer className="text-center py-2 mt-6 text-secondary ">
+            <p className="mb-0">
+              Copyright © Brother&apos;s Kitchenware {new Date().getFullYear()}.
+              All rights reserved.
+            </p>
+          </footer>
+        </div>
+      </div>
     </DashboardLayout>
   );
 };

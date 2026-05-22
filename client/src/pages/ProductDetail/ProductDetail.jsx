@@ -5,6 +5,7 @@ import Loader from "../../components/Loader/Loader.jsx";
 import ProductCard from "../../components/product/ProductCard.jsx";
 import CurrencyFormat from "../../components/CurrencyFormat/CurrencyFormat.jsx";
 import { useCart } from "../../context/CartContext";
+import { showSuccessToast } from "../../lib/toast.js";
 import { ADD_TO_CART_BUTTON_INLINE } from "../../constants/addToCartButton.js";
 import StarRating from "../../components/StarRating/StarRating.jsx";
 
@@ -187,14 +188,15 @@ const ProductDetail = () => {
             <div className="flex flex-wrap gap-4">
               <button
                 type="button"
-                onClick={() =>
+                onClick={() => {
                   addToCart({
                     id: product.id,
                     name: product.name,
                     image_url: product.image_url,
                     price: Number(product.price),
-                  })
-                }
+                  });
+                  showSuccessToast("Added to cart");
+                }}
                 className={ADD_TO_CART_BUTTON_INLINE}
               >
                 Add to Cart

@@ -4,11 +4,18 @@ import {
   IconBell,
   IconLayoutSidebarLeftExpand,
   IconLayoutSidebarLeftCollapse,
+  IconMenu2,
+  IconX,
 } from "@tabler/icons-react";
 import { adminApi } from "../../../lib/adminApi.js";
 import { useAdminAuth } from "../../../context/AdminAuthContext";
 
-export const Topbar = ({ onToggleSidebar, sidebarCollapsed }) => {
+export const Topbar = ({
+  onToggleSidebar,
+  sidebarCollapsed,
+  isMobile = false,
+  mobileMenuOpen = false,
+}) => {
   const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -51,22 +58,30 @@ export const Topbar = ({ onToggleSidebar, sidebarCollapsed }) => {
   return (
     <nav
       id="topbar"
-      className={`topbar d-flex align-items-center px-3 ${sidebarCollapsed ? "full" : ""}`}
+      className={`topbar d-flex align-items-center ${sidebarCollapsed && !isMobile ? "full" : ""} ${isMobile ? "topbar-mobile" : ""}`}
     >
       <button
         id="toggleBtn"
-        className="btn btn-light btn-icon btn-sm me-2"
+        className="btn btn-light btn-icon btn-sm admin-menu-toggle"
         type="button"
         onClick={onToggleSidebar}
+        aria-label={isMobile ? "Toggle navigation menu" : "Toggle sidebar"}
+        aria-expanded={isMobile ? mobileMenuOpen : undefined}
       >
-        {sidebarCollapsed ? (
+        {isMobile ? (
+          mobileMenuOpen ? <IconX size={20} /> : <IconMenu2 size={20} />
+        ) : sidebarCollapsed ? (
           <IconLayoutSidebarLeftCollapse size={18} />
         ) : (
           <IconLayoutSidebarLeftExpand size={18} />
         )}
       </button>
 
-      <div className="d-flex align-items-center gap-1 ms-auto">
+      {isMobile && (
+        <span className="topbar-mobile-title text-truncate">Brothers Admin</span>
+      )}
+
+      <div className="d-flex align-items-center gap-1 ms-auto topbar-actions">
         {staff && (
           <div className="d-flex align-items-center gap-1">
             <div className="relative" style={{ position: "relative" }}>
@@ -87,16 +102,7 @@ export const Topbar = ({ onToggleSidebar, sidebarCollapsed }) => {
               </button>
 
               {showNotifications && (
-                <div
-                  className="dropdown-menu dropdown-menu-end show p-0 shadow"
-                  style={{
-                    minWidth: 320,
-                    position: "absolute",
-                    top: "100%",
-                    right: 0,
-                    zIndex: 1000,
-                  }}
-                >
+                <div className="dropdown-menu dropdown-menu-end show p-0 shadow admin-dropdown-panel admin-notifications-panel">
                   <ul
                     className="list-unstyled p-0 m-0"
                     style={{ maxHeight: 360, overflowY: "auto" }}
@@ -138,26 +144,22 @@ export const Topbar = ({ onToggleSidebar, sidebarCollapsed }) => {
               )}
             </div>
 
-            <div className="dropdown ms-3" style={{ position: "relative" }}>
+            <div className="dropdown admin-user-menu" style={{ position: "relative" }}>
               <button
                 type="button"
-                className="btn btn-light btn-sm"
+                className="btn btn-light btn-sm admin-user-btn"
                 onClick={() => setShowUserMenu(!showUserMenu)}
               >
-                {staff.name}
+                <span className="admin-user-avatar">
+                  {staff.name?.charAt(0)?.toUpperCase() || "A"}
+                </span>
+                <span className="admin-user-name d-none d-sm-inline">
+                  {staff.name}
+                </span>
               </button>
 
               {showUserMenu && (
-                <div
-                  className="dropdown-menu dropdown-menu-end show p-0 shadow"
-                  style={{
-                    position: "absolute",
-                    top: "100%",
-                    right: 0,
-                    zIndex: 1000,
-                    minWidth: 200,
-                  }}
-                >
+                <div className="dropdown-menu dropdown-menu-end show p-0 shadow admin-dropdown-panel admin-user-dropdown">
                   <div className="px-3 py-2 border-bottom small text-muted">
                     {staff.email}
                   </div>

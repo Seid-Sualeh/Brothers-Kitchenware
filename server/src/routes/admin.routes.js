@@ -17,6 +17,8 @@ const {
   getLowStockController,
   confirmOrderController,
   confirmMobileWalletPaymentController,
+  getWalletPaymentSessionController,
+  processWalletPaymentController,
   cancelOrderController,
   getAdminNotificationsController,
   markAdminNotificationReadController,
@@ -55,6 +57,18 @@ module.exports = function createAdminRouter(getCtx) {
     requireDb,
     authCustomer,
     confirmMobileWalletPaymentController,
+  );
+  router.get(
+    "/orders/:id/wallet-session",
+    requireDb,
+    authCustomer,
+    getWalletPaymentSessionController,
+  );
+  router.post(
+    "/orders/:id/wallet-pay",
+    requireDb,
+    authCustomer,
+    processWalletPaymentController,
   );
   router.get(
     "/me/notifications",

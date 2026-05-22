@@ -132,9 +132,7 @@ const CreateProduct = () => {
               <p className="mb-0">Manage your product inventory</p>
             </div>
             <div>
-              <Link to="/admin/inventory" className="btn btn-primary"
-               
-              >
+              <Link to="/admin/inventory" className="btn btn-primary">
                 Go to Inventory List
               </Link>
             </div>
@@ -302,24 +300,8 @@ const CreateProduct = () => {
         <div className="col-12">
           <footer className="text-center py-2 mt-6 text-secondary ">
             <p className="mb-0">
-              Copyright © 2026 InApp Inventory Dashboard. Developed by{" "}
-              <a
-                href="https://codescandy.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary"
-              >
-                CodesCandy
-              </a>{" "}
-              • Distributed by{" "}
-              <a
-                href="https://themewagon.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary"
-              >
-                ThemeWagon
-              </a>{" "}
+              Copyright © Brother&apos;s Kitchenware {new Date().getFullYear()}.
+              All rights reserved.
             </p>
           </footer>
         </div>

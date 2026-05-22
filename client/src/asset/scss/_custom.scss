@@ -61,6 +61,8 @@
 		padding-left: 17px;
 		color: $gray-800;
     border-bottom: 1px solid $gray-200;
+		z-index: 10;
+		cursor: pointer;
 	}
 }
 .sidebar.collapsed {

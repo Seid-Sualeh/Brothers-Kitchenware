@@ -1,26 +1,36 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { FiCheckCircle, FiExternalLink } from "react-icons/fi";
 import { useAuth } from "../../context/AuthContext";
 import { useCart } from "../../context/CartContext";
 import { api } from "../../lib/api.js";
+import CheckoutSteps from "../../components/ecommerce/CheckoutSteps.jsx";
+import CurrencyFormat from "../../components/CurrencyFormat/CurrencyFormat";
 
 const PAYMENT_OPTIONS = [
   {
     value: "telebirr",
     label: "Telebirr",
-    description: "Send a payment request to the customer's phone for confirmation.",
+    description:
+      "You will be redirected to Telebirr to enter your PIN and pay if your balance is sufficient.",
+    badge: "09xxxxxxxx",
   },
   {
     value: "mpesa",
     label: "M-Pesa",
-    description: "Trigger a phone confirmation flow before marking the order paid.",
+    description:
+      "You will be redirected to M-Pesa to authorize payment from your mobile wallet.",
+    badge: "07xxxxxxxx",
   },
   {
     value: "cash",
-    label: "Simple Checkout",
-    description: "Place the order now and let the admin confirm payment manually.",
+    label: "Pay on delivery",
+    description: "Place your order now. Our team will confirm payment manually.",
   },
 ];
+
+const inputClass =
+  "w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#2d6a6a]/30 focus:border-[#2d6a6a]";
 
 export default function Payment() {
   const { user, loading: authLoading } = useAuth();
@@ -33,14 +43,23 @@ export default function Payment() {
   const [walletForm, setWalletForm] = useState({
     phoneNumber: "",
     fullName: "",
-    pin: "",
   });
-  const [pendingMobilePayment, setPendingMobilePayment] = useState(null);
+
+  useEffect(() => {
+    if (user?.name) {
+      setWalletForm((p) =>
+        p.fullName ? p : { ...p, fullName: user.name },
+      );
+    }
+  }, [user?.name]);
 
   useEffect(() => {
     if (authLoading) return;
     if (!user) {
-      navigate("/signin", { state: { msg: "Sign in to complete checkout", redirect: "/payment" }, replace: true });
+      navigate("/signin", {
+        state: { msg: "Sign in to complete checkout", redirect: "/payment" },
+        replace: true,
+      });
       return;
     }
     if (!cart.length) {
@@ -55,19 +74,16 @@ export default function Payment() {
     try {
       const trimmedPhone = walletForm.phoneNumber.trim();
       const trimmedName = walletForm.fullName.trim();
-      const trimmedPin = walletForm.pin.trim();
 
       if (selectedMethod === "telebirr" || selectedMethod === "mpesa") {
-        if (!trimmedPhone || !trimmedName || !trimmedPin) {
-          throw new Error("phone number, full name, and PIN are required");
+        if (!trimmedPhone || !trimmedName) {
+          throw new Error("Phone number and full name are required.");
         }
-
         if (selectedMethod === "telebirr" && !/^09\d{8}$/.test(trimmedPhone)) {
-          throw new Error("Telebirr phone number must start with 09 and be 10 digits.");
+          throw new Error("Telebirr number must start with 09 and be 10 digits.");
         }
-
         if (selectedMethod === "mpesa" && !/^07\d{8}$/.test(trimmedPhone)) {
-          throw new Error("M-Pesa phone number must start with 07 and be 10 digits.");
+          throw new Error("M-Pesa number must start with 07 and be 10 digits.");
         }
       }
 
@@ -78,6 +94,7 @@ export default function Payment() {
         name: c.name,
         image_url: c.image_url,
       }));
+
       const payload = {
         items,
         paymentMethod: selectedMethod,
@@ -87,49 +104,26 @@ export default function Payment() {
         payload.paymentDetails = {
           phoneNumber: trimmedPhone,
           fullName: trimmedName,
-          pin: trimmedPin,
         };
       }
 
       const { data } = await api.post("/api/orders/checkout", payload);
+
       if (selectedMethod === "cash") {
         clearCart();
         setDone(true);
-        setTimeout(() => navigate("/orders", { replace: true }), 1200);
+        setTimeout(() => navigate("/orders", { replace: true }), 1500);
       } else {
-        setPendingMobilePayment({
-          orderId: data.orderId,
-          paymentMethod: selectedMethod,
-          message:
-            data.paymentAction?.message ||
-            "A confirmation request has been sent to your phone.",
-        });
+        const redirectUrl =
+          data.paymentAction?.url ||
+          `/payment/wallet/${selectedMethod}?orderId=${data.orderId}`;
+        navigate(redirectUrl, { replace: true });
       }
     } catch (err) {
       setError(
         err.response?.data?.error ||
           err.message ||
-          "Checkout failed. Ensure MySQL is configured.",
-      );
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const confirmMobilePayment = async () => {
-    if (!pendingMobilePayment?.orderId) return;
-    setSubmitting(true);
-    setError("");
-    try {
-      await api.patch(`/api/orders/${pendingMobilePayment.orderId}/mobile-confirm`);
-      clearCart();
-      setDone(true);
-      setPendingMobilePayment(null);
-      setTimeout(() => navigate("/orders", { replace: true }), 1200);
-    } catch (err) {
-      setError(
-        err.response?.data?.error ||
-          "Could not confirm your mobile wallet payment.",
+          "Checkout failed. Please try again.",
       );
     } finally {
       setSubmitting(false);
@@ -138,146 +132,188 @@ export default function Payment() {
 
   if (authLoading || !user || !cart.length) {
     return (
-      <div className="min-h-[40vh] flex items-center justify-center">
-        <div className="spinner-border text-secondary" role="status" />
+      <div className="min-h-[50vh] flex items-center justify-center bg-[#FAF9F6]">
+        <div className="w-8 h-8 border-2 border-[#2d6a6a] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-[60vh] max-w-2xl mx-auto px-6 py-16">
-      <h1 className="font-display text-3xl font-bold text-gray-900 mb-2">Checkout</h1>
-      <p className="text-gray-600 mb-6">
-        Choose Telebirr, M-Pesa, or Simple Checkout. Mobile wallets send a request
-        to the customer's phone, while Simple Checkout stays pending until an admin
-        confirms payment.
-      </p>
+    <div className="min-h-screen bg-[#FAF9F6]">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <CheckoutSteps current="checkout" />
 
-      <div className="border border-gray-100 rounded-xl p-6 bg-gray-50 mb-6">
-        <p className="text-sm text-gray-700 mb-1">
-          Logged in as <strong>{user.email}</strong>
+        <h1 className="font-display text-3xl font-bold text-gray-900 mb-2">
+          Checkout
+        </h1>
+        <p className="text-gray-600 mb-8">
+          Secure checkout for <strong>{user.email}</strong>
         </p>
-        <p className="text-lg font-bold text-gray-900">Total due: ${totalPrice.toFixed(2)}</p>
-      </div>
 
-      {error && (
-        <div className="mb-4 p-3 bg-red-50 text-red-800 rounded-lg text-sm" role="alert">
-          {error}
-        </div>
-      )}
-      {done && (
-        <div className="mb-4 p-3 bg-teal-50 text-teal-900 rounded-lg text-sm" role="status">
-          Order placed. Redirecting to your orders…
-        </div>
-      )}
+        <div className="grid gap-8 lg:grid-cols-5">
+          <div className="lg:col-span-3">
+            {error && (
+              <div
+                className="mb-5 p-4 rounded-xl bg-red-50 text-red-800 text-sm border border-red-100"
+                role="alert"
+              >
+                {error}
+              </div>
+            )}
+            {done && (
+              <div
+                className="mb-5 p-4 rounded-xl bg-emerald-50 text-emerald-900 text-sm border border-emerald-100 flex items-center gap-2"
+                role="status"
+              >
+                <FiCheckCircle size={20} />
+                Order placed successfully. Redirecting to your orders…
+              </div>
+            )}
 
-      <form onSubmit={placeOrder} className="space-y-4">
-        <div className="grid gap-3">
-          {PAYMENT_OPTIONS.map((option) => (
-            <label
-              key={option.value}
-              className={`rounded-xl border p-4 cursor-pointer transition ${
-                selectedMethod === option.value
-                  ? "border-teal-600 bg-teal-50"
-                  : "border-gray-200 bg-white"
-              }`}
+            <form onSubmit={placeOrder} className="space-y-5">
+              <div className="grid gap-3">
+                {PAYMENT_OPTIONS.map((option) => (
+                  <label
+                    key={option.value}
+                    className={`block rounded-2xl border p-4 cursor-pointer transition ${
+                      selectedMethod === option.value
+                        ? "border-[#2d6a6a] bg-white ring-1 ring-[#2d6a6a]/20"
+                        : "border-gray-200 bg-white hover:border-gray-300"
+                    }`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        value={option.value}
+                        checked={selectedMethod === option.value}
+                        onChange={(e) => setSelectedMethod(e.target.value)}
+                        className="mt-1 text-[#2d6a6a] focus:ring-[#2d6a6a]"
+                      />
+                      <div className="flex-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="font-semibold text-gray-900">
+                            {option.label}
+                          </span>
+                          {option.badge && (
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+                              {option.badge}
+                            </span>
+                          )}
+                          {(option.value === "telebirr" ||
+                            option.value === "mpesa") && (
+                            <FiExternalLink
+                              size={14}
+                              className="text-[#2d6a6a]"
+                              aria-hidden
+                            />
+                          )}
+                        </div>
+                        <p className="mt-1 mb-0 text-sm text-gray-600">
+                          {option.description}
+                        </p>
+                      </div>
+                    </div>
+                  </label>
+                ))}
+              </div>
+
+              {(selectedMethod === "telebirr" || selectedMethod === "mpesa") && (
+                <div className="rounded-2xl border border-gray-100 bg-white p-5 space-y-4 shadow-sm">
+                  <h2 className="font-semibold text-gray-900">
+                    Link your {selectedMethod === "telebirr" ? "Telebirr" : "M-Pesa"}{" "}
+                    wallet
+                  </h2>
+                  <p className="text-sm text-gray-500 -mt-2">
+                    Next step: secure redirect to enter PIN and confirm payment
+                    (like card checkout on international stores).
+                  </p>
+                  <input
+                    type="tel"
+                    className={inputClass}
+                    placeholder={
+                      selectedMethod === "telebirr"
+                        ? "09xxxxxxxx"
+                        : "07xxxxxxxx"
+                    }
+                    value={walletForm.phoneNumber}
+                    onChange={(e) =>
+                      setWalletForm((p) => ({
+                        ...p,
+                        phoneNumber: e.target.value,
+                      }))
+                    }
+                  />
+                  <input
+                    type="text"
+                    className={inputClass}
+                    placeholder="Full name on wallet account"
+                    value={walletForm.fullName}
+                    onChange={(e) =>
+                      setWalletForm((p) => ({ ...p, fullName: e.target.value }))
+                    }
+                  />
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={submitting || done}
+                className="w-full rounded-xl bg-[#2a2a2a] text-white py-3.5 font-bold uppercase tracking-widest text-sm hover:bg-black disabled:opacity-60 transition-colors inline-flex items-center justify-center gap-2"
+              >
+                {submitting
+                  ? "Processing…"
+                  : selectedMethod === "cash"
+                    ? "Place order"
+                    : `Continue to ${selectedMethod === "telebirr" ? "Telebirr" : "M-Pesa"}`}
+              </button>
+            </form>
+
+            <Link
+              to="/cart"
+              className="inline-block mt-4 text-sm text-[#2d6a6a] font-medium hover:underline"
             >
-              <input
-                type="radio"
-                name="paymentMethod"
-                value={option.value}
-                checked={selectedMethod === option.value}
-                onChange={(e) => {
-                  setSelectedMethod(e.target.value);
-                  setPendingMobilePayment(null);
-                }}
-                className="mr-3"
-              />
-              <span className="font-semibold text-gray-900">{option.label}</span>
-              <p className="mt-2 mb-0 text-sm text-gray-600">{option.description}</p>
-            </label>
-          ))}
-        </div>
-
-        {(selectedMethod === "telebirr" || selectedMethod === "mpesa") && !pendingMobilePayment && (
-          <div className="rounded-xl border border-gray-200 bg-white p-5 space-y-4">
-            <h2 className="text-lg font-bold text-gray-900">
-              {selectedMethod === "telebirr" ? "Telebirr" : "M-Pesa"} payment form
-            </h2>
-            <input
-              type="tel"
-              className="w-full rounded-lg border border-gray-300 px-4 py-3"
-              placeholder="Enter your phone number"
-              value={walletForm.phoneNumber}
-              onChange={(e) =>
-                setWalletForm((prev) => ({ ...prev, phoneNumber: e.target.value }))
-              }
-            />
-            <input
-              type="text"
-              className="w-full rounded-lg border border-gray-300 px-4 py-3"
-              placeholder="Enter your full name"
-              value={walletForm.fullName}
-              onChange={(e) =>
-                setWalletForm((prev) => ({ ...prev, fullName: e.target.value }))
-              }
-            />
-            <input
-              type="password"
-              className="w-full rounded-lg border border-gray-300 px-4 py-3"
-              placeholder="PIN"
-              value={walletForm.pin}
-              onChange={(e) =>
-                setWalletForm((prev) => ({ ...prev, pin: e.target.value }))
-              }
-            />
+              ← Back to cart
+            </Link>
           </div>
-        )}
 
-        {pendingMobilePayment && (
-          <div className="rounded-xl border border-amber-200 bg-amber-50 p-5">
-            <h2 className="text-lg font-bold text-gray-900 mb-2">
-              Confirm on your phone
-            </h2>
-            <p className="text-sm text-gray-700 mb-4">{pendingMobilePayment.message}</p>
-            <div className="flex flex-wrap gap-3">
-              <button
-                type="button"
-                onClick={confirmMobilePayment}
-                disabled={submitting}
-                className="rounded-xl bg-[#2a2a2a] text-white px-5 py-3 font-bold uppercase tracking-widest hover:bg-black disabled:opacity-60"
-              >
-                {submitting ? "Confirming…" : "I confirmed on my phone"}
-              </button>
-              <button
-                type="button"
-                onClick={() => setPendingMobilePayment(null)}
-                disabled={submitting}
-                className="rounded-xl border border-gray-300 px-5 py-3 font-semibold text-gray-700"
-              >
-                Edit payment details
-              </button>
+          <div className="lg:col-span-2">
+            <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm lg:sticky lg:top-24">
+              <h2 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-4">
+                Your order
+              </h2>
+              <ul className="space-y-4 mb-6 max-h-64 overflow-y-auto">
+                {cart.map((item) => (
+                  <li key={item.id} className="flex gap-3 text-sm">
+                    <div className="w-14 h-14 rounded-lg bg-[#FAF9F6] overflow-hidden shrink-0">
+                      <img
+                        src={item.image_url}
+                        alt=""
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-gray-900 truncate">
+                        {item.name}
+                      </p>
+                      <p className="text-gray-500">Qty {item.quantity}</p>
+                    </div>
+                    <span className="font-semibold text-gray-900 shrink-0">
+                      <CurrencyFormat amount={item.price * item.quantity} />
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              <div className="pt-4 border-t border-gray-200 flex justify-between font-bold text-lg text-gray-900">
+                <span>Total</span>
+                <span>
+                  <CurrencyFormat amount={totalPrice} />
+                </span>
+              </div>
             </div>
           </div>
-        )}
-
-        <button
-          type="submit"
-          disabled={submitting || done || Boolean(pendingMobilePayment)}
-          className="w-full rounded-xl bg-[#2a2a2a] text-white py-4 font-bold uppercase tracking-widest hover:bg-black disabled:opacity-60"
-        >
-          {submitting
-            ? "Submitting…"
-            : selectedMethod === "cash"
-              ? "Place simple checkout order"
-              : "Send payment request"}
-        </button>
-        <div className="text-center">
-          <Link to="/cart" className="text-sm text-teal-700 hover:underline">
-            Back to cart
-          </Link>
         </div>
-      </form>
+      </div>
     </div>
   );
 }

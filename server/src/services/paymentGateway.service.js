@@ -47,15 +47,16 @@ async function initializePayment({
     };
   }
 
-  // Placeholder actions to show frontend how to proceed for mobile wallets.
-  if (provider === "telebirr") {
+  if (provider === "telebirr" || provider === "mpesa") {
     return {
       reference: ref,
-      status: "initialized",
+      status: "awaiting_wallet_auth",
       action: {
-        type: "phone_prompt",
-        provider: "telebirr",
-        message: `A Telebirr payment request has been sent to ${mobileDetails.maskedPhoneNumber || "the provided phone"}. Confirm it on your phone to complete the order.`,
+        type: "redirect",
+        provider,
+        orderId,
+        url: `/payment/wallet/${provider}?orderId=${orderId}`,
+        message: `Continue to ${provider === "telebirr" ? "Telebirr" : "M-Pesa"} to authorize payment.`,
       },
       raw: {
         provider,
@@ -63,27 +64,8 @@ async function initializePayment({
         email,
         name,
         customerFullName: mobileDetails.fullName,
-        phoneNumber: mobileDetails.maskedPhoneNumber,
-      },
-    };
-  }
-
-  if (provider === "mpesa") {
-    return {
-      reference: ref,
-      status: "initialized",
-      action: {
-        type: "phone_prompt",
-        provider: "mpesa",
-        message: `An M-Pesa payment request has been sent to ${mobileDetails.maskedPhoneNumber || "the provided phone"}. Confirm it on your phone to complete the order.`,
-      },
-      raw: {
-        provider,
-        orderId,
-        email,
-        name,
-        customerFullName: mobileDetails.fullName,
-        phoneNumber: mobileDetails.maskedPhoneNumber,
+        phoneNumber: mobileDetails.phoneNumber,
+        maskedPhoneNumber: mobileDetails.maskedPhoneNumber,
       },
     };
   }

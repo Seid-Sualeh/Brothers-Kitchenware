@@ -4,6 +4,13 @@ const {
   mapMethodToProvider,
   sanitizeMobilePaymentDetails,
 } = require("./paymentGateway.service");
+const {
+  normalizePhone,
+  maskPhone,
+  getOrCreateAccount,
+  authorizeWalletPayment,
+  DEFAULT_DEMO_PIN,
+} = require("./walletSimulator.service");
 
 function normalizeEmail(value) {
   return String(value || "")
@@ -217,13 +224,11 @@ async function checkoutOrderWithPayment(
 
     if (method === "telebirr" || method === "mpesa") {
       const mobileDetails = sanitizeMobilePaymentDetails(paymentDetails);
-      if (
-        !mobileDetails.phoneNumber ||
-        !mobileDetails.fullName ||
-        !mobileDetails.pin
-      ) {
-        throw new Error("phone number, full name, and PIN are required");
+      if (!mobileDetails.phoneNumber || !mobileDetails.fullName) {
+        throw new Error("phone number and full name are required");
       }
+      normalizePhone(method, mobileDetails.phoneNumber);
+      getOrCreateAccount(method, mobileDetails.phoneNumber, mobileDetails.fullName);
     }
 
     // Check stock for each item
@@ -650,6 +655,132 @@ async function markAdminNotificationRead(db, staffId, notificationId) {
   return true;
 }
 
+async function parsePaymentMetadata(db, orderId) {
+  const [rows] = await db.query(
+    "SELECT metadata_json FROM payments WHERE order_id = ? ORDER BY id DESC LIMIT 1",
+    [orderId],
+  );
+  if (!rows[0]?.metadata_json) return {};
+  try {
+    return typeof rows[0].metadata_json === "string"
+      ? JSON.parse(rows[0].metadata_json)
+      : rows[0].metadata_json;
+  } catch {
+    return {};
+  }
+}
+
+async function getWalletPaymentSession(db, userId, orderId) {
+  const [orders] = await db.query(
+    `SELECT id, user_id, status, total_amount, payment_method, payment_provider, customer_name
+     FROM orders WHERE id = ? AND user_id = ?`,
+    [orderId, userId],
+  );
+  const order = orders[0];
+  if (!order) return null;
+
+  const method = String(order.payment_method || "").toLowerCase();
+  if (!["telebirr", "mpesa"].includes(method)) {
+    throw new Error("This order does not use a mobile wallet");
+  }
+  if (order.status === "completed") {
+    return { alreadyCompleted: true, orderId: order.id };
+  }
+  if (order.status === "cancelled") {
+    throw new Error("This order was cancelled");
+  }
+
+  const meta = await parsePaymentMetadata(db, orderId);
+  const phone = meta.phoneNumber;
+  if (!phone) {
+    throw new Error("Wallet phone number missing for this order");
+  }
+
+  normalizePhone(method, phone);
+  const account = getOrCreateAccount(
+    method,
+    phone,
+    meta.customerFullName || order.customer_name,
+  );
+
+  return {
+    orderId: order.id,
+    provider: method,
+    merchantName: "Brothers Kitchenware",
+    amount: Number(order.total_amount),
+    currency: "ETB",
+    maskedPhone: maskPhone(phone),
+    payerName: account.fullName,
+    availableBalance: account.balance,
+    status: order.status,
+    demoHint: `Demo PIN: ${DEFAULT_DEMO_PIN} · Default balance ETB ${account.balance.toFixed(2)}`,
+  };
+}
+
+async function processWalletPayment(db, userId, orderId, { pin }) {
+  const [orders] = await db.query(
+    `SELECT id, user_id, status, total_amount, payment_method, customer_name
+     FROM orders WHERE id = ? AND user_id = ?`,
+    [orderId, userId],
+  );
+  const order = orders[0];
+  if (!order) return null;
+  if (order.status === "completed") {
+    return { alreadyCompleted: true, orderId: order.id };
+  }
+  if (order.status === "cancelled") {
+    throw new Error("This order was cancelled");
+  }
+
+  const method = String(order.payment_method || "").toLowerCase();
+  if (!["telebirr", "mpesa"].includes(method)) {
+    throw new Error("Invalid wallet payment method");
+  }
+
+  const meta = await parsePaymentMetadata(db, orderId);
+  const phone = meta.phoneNumber;
+  if (!phone) {
+    throw new Error("Wallet phone number missing for this order");
+  }
+
+  const authResult = authorizeWalletPayment({
+    provider: method,
+    phone,
+    pin,
+    amount: order.total_amount,
+    fullName: meta.customerFullName || order.customer_name,
+  });
+
+  const paymentMeta = await parsePaymentMetadata(db, orderId);
+  paymentMeta.walletAuth = authResult;
+  await db.query(
+    "UPDATE payments SET status = 'completed', metadata_json = ? WHERE order_id = ?",
+    [JSON.stringify(paymentMeta), orderId],
+  );
+
+  await finalizeOrderCompletion(
+    db,
+    orderId,
+    order.user_id,
+    `Your ${method.toUpperCase()} payment for order #${orderId} was successful. Remaining balance: ETB ${authResult.remainingBalance.toFixed(2)}.`,
+  );
+
+  await notifyAdmins(db, {
+    type: "mobile_payment_confirmed",
+    title: "Mobile wallet payment received",
+    body: `Order #${orderId} paid via ${method.toUpperCase()} (${authResult.maskedPhone}).`,
+    relatedOrderId: orderId,
+  });
+
+  return {
+    orderId,
+    status: "completed",
+    paymentMethod: method,
+    remainingBalance: authResult.remainingBalance,
+    amountPaid: authResult.amountPaid,
+  };
+}
+
 module.exports = {
   createCustomer,
   loginCustomer,
@@ -674,6 +805,8 @@ module.exports = {
   getLowStock,
   confirmOrder,
   confirmMobileWalletPayment,
+  getWalletPaymentSession,
+  processWalletPayment,
   cancelOrder,
   getAdminNotifications,
   markAdminNotificationRead,

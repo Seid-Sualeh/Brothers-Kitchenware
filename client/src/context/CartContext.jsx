@@ -1,20 +1,51 @@
-import { createContext, useContext, useReducer, useEffect } from "react";
+import {
+  createContext,
+  useContext,
+  useReducer,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { useAuth } from "./AuthContext";
 
 const CartContext = createContext();
+const GUEST_SESSION_KEY = "bk_guest_session";
 
-const getCartKey = (user) => {
-  const id = user?.id || user?.email;
-  return id ? `cart:${id}` : "cart:guest";
+const getGuestSessionId = () => {
+  let guestId = sessionStorage.getItem(GUEST_SESSION_KEY);
+  if (!guestId) {
+    guestId =
+      typeof crypto !== "undefined" && crypto.randomUUID
+        ? crypto.randomUUID()
+        : `guest_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
+    sessionStorage.setItem(GUEST_SESSION_KEY, guestId);
+  }
+  return guestId;
 };
 
-const getLocalStorage = (key) => {
+const getCartKey = (user) => {
+  if (user?.id != null && user.id !== "") {
+    return `cart:user:${String(user.id)}`;
+  }
+  if (user?.email) {
+    return `cart:user:${String(user.email).toLowerCase()}`;
+  }
+  return `cart:guest:${getGuestSessionId()}`;
+};
+
+const readCart = (key) => {
   try {
-    const cart = JSON.parse(localStorage.getItem(key));
+    const raw = localStorage.getItem(key);
+    const cart = raw ? JSON.parse(raw) : [];
     return Array.isArray(cart) ? cart : [];
   } catch {
     return [];
   }
+};
+
+const writeCart = (key, cart) => {
+  if (!key) return;
+  localStorage.setItem(key, JSON.stringify(cart));
 };
 
 const cartReducer = (state, action) => {
@@ -40,7 +71,7 @@ const cartReducer = (state, action) => {
       );
     case "CLEAR_CART":
       return [];
-    case "INITIALIZE_CART":
+    case "SET_CART":
       return action.payload;
     default:
       return state;
@@ -48,34 +79,62 @@ const cartReducer = (state, action) => {
 };
 
 export const CartProvider = ({ children }) => {
-  const { user } = useAuth();
-  const cartKey = getCartKey(user);
+  const { user, loading: authLoading } = useAuth();
+  const [cart, dispatch] = useReducer(cartReducer, []);
+  const [cartReady, setCartReady] = useState(false);
 
-  const [cart, dispatch] = useReducer(cartReducer, [], () =>
-    getLocalStorage(cartKey),
-  );
+  const cartRef = useRef(cart);
+  const activeKeyRef = useRef(null);
 
-  useEffect(() => {
-    localStorage.setItem(cartKey, JSON.stringify(cart));
-  }, [cart, cartKey]);
+  cartRef.current = cart;
 
   useEffect(() => {
-    dispatch({ type: "INITIALIZE_CART", payload: getLocalStorage(cartKey) });
-  }, [cartKey]);
+    if (authLoading) {
+      setCartReady(false);
+      return;
+    }
+
+    const nextKey = getCartKey(user);
+    const prevKey = activeKeyRef.current;
+
+    if (prevKey === nextKey) {
+      setCartReady(true);
+      return;
+    }
+
+    if (prevKey) {
+      writeCart(prevKey, cartRef.current);
+    }
+
+    activeKeyRef.current = nextKey;
+    dispatch({ type: "SET_CART", payload: readCart(nextKey) });
+    setCartReady(true);
+  }, [authLoading, user?.id, user?.email]);
+
+  useEffect(() => {
+    if (authLoading || !cartReady || !activeKeyRef.current) return;
+    writeCart(activeKeyRef.current, cart);
+  }, [cart, authLoading, cartReady]);
 
   const addToCart = (product) =>
     dispatch({ type: "ADD_TO_CART", payload: product });
   const removeFromCart = (id) =>
     dispatch({ type: "REMOVE_FROM_CART", payload: id });
-  const updateQuantity = (id, quantity) =>
+  const updateQuantity = (id, quantity) => {
+    if (quantity < 1) {
+      dispatch({ type: "REMOVE_FROM_CART", payload: id });
+      return;
+    }
     dispatch({ type: "UPDATE_QUANTITY", payload: { id, quantity } });
+  };
   const clearCart = () => dispatch({ type: "CLEAR_CART" });
 
-  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-  const totalPrice = cart.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0,
-  );
+  const totalItems = cartReady
+    ? cart.reduce((sum, item) => sum + item.quantity, 0)
+    : 0;
+  const totalPrice = cartReady
+    ? cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
+    : 0;
 
   return (
     <CartContext.Provider
@@ -87,6 +146,7 @@ export const CartProvider = ({ children }) => {
         clearCart,
         totalItems,
         totalPrice,
+        cartReady,
       }}
     >
       {children}

@@ -125,7 +125,7 @@ const Contact = () => {
                     href="tel:+18234557790"
                     className="text-base font-semibold text-black hover:opacity-70"
                   >
-                    +1 823 455-7790
+                    +251 929 075 365
                   </a>
                 </div>
               </div>
@@ -144,7 +144,7 @@ const Contact = () => {
                     href="mailto:support@brothershomegoods.com"
                     className="text-base font-semibold text-black hover:opacity-70 break-all"
                   >
-                    support@brothershomegoods.com
+                    support@brotherskitchinware.com
                   </a>
                 </div>
               </div>
@@ -164,7 +164,7 @@ const Contact = () => {
                     Opening hours:
                   </p>
                   <p className="text-base font-semibold text-black">
-                    Mon–Sat, 9AM–7PM
+                    Mon–Sat, 8:00 AM–9:00 PM
                   </p>
                 </div>
               </div>

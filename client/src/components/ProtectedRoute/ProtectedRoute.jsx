@@ -1,17 +1,20 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 const ProtectedRoute = ({ children, msg, redirect }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, loading } = useAuth();
+  const redirectTo =
+    redirect || `${location.pathname}${location.search}`;
 
   useEffect(() => {
     if (loading) return;
     if (!user) {
-      navigate("/signin", { state: { msg, redirect } });
+      navigate("/signin", { state: { msg, redirect: redirectTo } });
     }
-  }, [user, loading, navigate, msg, redirect]);
+  }, [user, loading, navigate, msg, redirectTo]);
 
   if (loading || !user) {
     return (

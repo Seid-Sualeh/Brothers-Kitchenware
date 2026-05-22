@@ -2,6 +2,7 @@ import CurrencyFormat from "../CurrencyFormat/CurrencyFormat";
 import Style from "./Product.module.css";
 import { Link } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
+import { showSuccessToast } from "../../lib/toast.js";
 import { ADD_TO_CART_BUTTON_FULL } from "../../constants/addToCartButton.js";
 import StarRating from "../StarRating/StarRating";
 
@@ -41,6 +42,7 @@ const ProductCard = ({ product, flex, renderDesc, renderAdd }) => {
       image_url: image,
       price,
     });
+    showSuccessToast("Added to cart");
   };
 
   if (!id) {

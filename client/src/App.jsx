@@ -31,6 +31,7 @@ import AddEmployee from "./pages/admin/addEmployee/AddEmployee";
 import ProductDetail from "./pages/ProductDetail/ProductDetail";
 import Orders from "./pages/Orders/Orders";
 import Payment from "./pages/Payment/Payment";
+import WalletPayment from "./pages/Payment/WalletPayment";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import AdminProtectedRoute from "./components/ProtectedRoute/AdminProtectedRoute";
 import TermsPolicy from "./pages/terms-policy/TermsPolicy";
@@ -213,6 +214,17 @@ function App() {
                           <Header />
                           <Payment />
                           <Footer />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/payment/wallet/:provider"
+                      element={
+                        <ProtectedRoute
+                          msg="Sign in to complete wallet payment"
+                          redirect="/payment"
+                        >
+                          <WalletPayment />
                         </ProtectedRoute>
                       }
                     />

@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState } from "react";
-import { adminApi } from "../lib/adminApi.js";
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
 const AdminAuthContext = createContext(null);
 
@@ -17,6 +17,23 @@ function readStaffFromStorage() {
 export function AdminAuthProvider({ children }) {
   const [staff, setStaff] = useState(() => readStaffFromStorage());
   const [loading, setLoading] = useState(false);
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    const stored = readStaffFromStorage();
+    if (stored) {
+      setStaff((current) => current ?? stored);
+    }
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!staff) {
+      const stored = readStaffFromStorage();
+      if (stored) {
+        setStaff(stored);
+      }
+    }
+  }, [staff]);
 
   const adminLogin = (user, token) => {
     localStorage.setItem("adminAccessToken", token);

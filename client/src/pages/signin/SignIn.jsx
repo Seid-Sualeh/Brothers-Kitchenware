@@ -3,6 +3,10 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { IconEye, IconEyeOff } from "@tabler/icons-react";
 import { useAuth } from "../../context/AuthContext";
 import { api } from "../../lib/api.js";
+import AuthPageLayout from "../../components/ecommerce/AuthPageLayout.jsx";
+
+const inputClass =
+  "w-full rounded-xl border border-gray-200 px-4 py-3 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#2d6a6a]/30 focus:border-[#2d6a6a]";
 
 const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -16,6 +20,7 @@ const SignIn = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const redirectMsg = location.state?.msg;
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -44,116 +49,127 @@ const SignIn = () => {
       const to = location.state?.redirect || "/";
       navigate(to, { replace: true });
     } catch (err) {
-      const msg =
-        err.response?.data?.error || "Invalid credentials. Please try again.";
-      setError(msg);
+      setError(
+        err.response?.data?.error || "Invalid credentials. Please try again.",
+      );
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="container d-flex align-items-center justify-content-center min-vh-100">
-      <div className="card" style={{ maxWidth: 420, width: "100%" }}>
-        <div className="card-body p-5">
-          <div className="text-center mb-3">
-            <Link to="/" className="mb-4 d-inline-block">
-              <span className="text-3xl font-serif font-black text-gray-900 tracking-tighter">
-                B<span className="text-teal-600">K</span>
-              </span>
-            </Link>
-            <h1 className="card-title mb-5 h5">Sign in to your account</h1>
-          </div>
-
-          {error && (
-            <div className="alert alert-danger" role="alert">
-              {error}
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit}>
-            <div className="mb-3">
-              <label className="form-label" htmlFor="email">
-                Email
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                className="form-control"
-                value={formData.email}
-                onChange={handleChange}
-                required
-                autoComplete="email"
-              />
-            </div>
-            <div className="mb-3">
-              <label className="form-label" htmlFor="password">
-                Password
-              </label>
-              <div className="input-group">
-                <input
-                  id="password"
-                  name="password"
-                  type={showPassword ? "text" : "password"}
-                  className="form-control"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                  autoComplete="current-password"
-                />
-                <button
-                  type="button"
-                  className="btn btn-outline-secondary rounded-3xl"
-                  onClick={() => setShowPassword(!showPassword)}
-                  aria-label="Toggle password visibility"
-                >
-                  {showPassword ? (
-                    <IconEyeOff size={18} />
-                  ) : (
-                    <IconEye size={18} />
-                  )}
-                </button>
-              </div>
-            </div>
-            <div className="mb-4 form-check">
-              <input
-                type="checkbox"
-                name="remember"
-                className="form-check-input"
-                id="remember"
-                checked={formData.remember}
-                onChange={handleChange}
-              />
-              <label className="form-check-label" htmlFor="remember">
-                Remember me
-              </label>
-            </div>
-            <button
-              type="submit"
-              className="btn btn-dark w-100 py-2 rounded-3xl"
-              disabled={isLoading}
-            >
-              {isLoading ? "Signing in…" : "Sign in"}
-            </button>
-          </form>
-          <div className="text-center mt-3">
+    <AuthPageLayout
+      title="Welcome back"
+      subtitle="Sign in to checkout, pay, and view your orders."
+      footer={
+        <>
+          <p className="text-sm text-gray-600 mb-2">
+            New here?{" "}
             <Link
-              to="/terms-policy"
-              className="btn btn-outline-secondary rounded-3xl w-100 py-2"
+              to="/signup"
+              state={location.state}
+              className="font-semibold text-[#2d6a6a] hover:underline"
             >
-              Terms & policy
+              Create an account
             </Link>
-          </div>
-          <p className="text-center text-muted mt-4 mb-0 small">
-            Staff? <Link to="/admin/signin">Admin / employee sign in</Link>
           </p>
-          <p className="text-center mt-2 mb-0">
-            <Link to="/signup">Create an account</Link>
+          <p className="text-xs text-gray-500">
+            Staff?{" "}
+            <Link to="/admin/signin" className="text-[#2d6a6a] hover:underline">
+              Admin sign in
+            </Link>
           </p>
+        </>
+      }
+    >
+      {redirectMsg && (
+        <div
+          className="mb-5 p-3 rounded-xl bg-[#eef6f4] text-[#1a4d4d] text-sm border border-[#8fbab5]/40"
+          role="status"
+        >
+          {redirectMsg}
         </div>
-      </div>
-    </div>
+      )}
+
+      {error && (
+        <div
+          className="mb-5 p-3 rounded-xl bg-red-50 text-red-800 text-sm border border-red-100"
+          role="alert"
+        >
+          {error}
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1.5">
+            Email
+          </label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            className={inputClass}
+            value={formData.email}
+            onChange={handleChange}
+            required
+            autoComplete="email"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1.5">
+            Password
+          </label>
+          <div className="relative">
+            <input
+              id="password"
+              name="password"
+              type={showPassword ? "text" : "password"}
+              className={inputClass}
+              value={formData.password}
+              onChange={handleChange}
+              required
+              autoComplete="current-password"
+            />
+            <button
+              type="button"
+              className="absolute end-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-800"
+              onClick={() => setShowPassword(!showPassword)}
+              aria-label="Toggle password visibility"
+            >
+              {showPassword ? <IconEyeOff size={18} /> : <IconEye size={18} />}
+            </button>
+          </div>
+        </div>
+
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input
+            type="checkbox"
+            name="remember"
+            id="remember"
+            checked={formData.remember}
+            onChange={handleChange}
+            className="rounded border-gray-300 text-[#2d6a6a] focus:ring-[#2d6a6a]"
+          />
+          <span className="text-sm text-gray-600">Remember me</span>
+        </label>
+
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="w-full rounded-xl bg-[#2a2a2a] text-white py-3.5 font-bold uppercase tracking-widest text-sm hover:bg-black disabled:opacity-60 transition-colors"
+        >
+          {isLoading ? "Signing in…" : "Sign in"}
+        </button>
+      </form>
+
+      <p className="text-center mt-4 mb-0">
+        <Link to="/terms-policy" className="text-sm text-gray-500 hover:text-[#2d6a6a]">
+          Terms & policy
+        </Link>
+      </p>
+    </AuthPageLayout>
   );
 };
 

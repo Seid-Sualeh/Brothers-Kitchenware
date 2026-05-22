@@ -11,7 +11,11 @@ import {
 } from "react-icons/fi";
 import { useCart } from "../../../context/CartContext";
 import { useAuth } from "../../../context/AuthContext";
+import { useAdminAuthSafe } from "../../../context/AdminAuthContext";
 import { STORE_CATEGORIES } from "../../../constants/storeCategories.js";
+
+const staffHomePath = (role) =>
+  role === "employee" ? "/admin/inventory" : "/admin/dashboard";
 
 const navLinkClass = ({ isActive }) =>
   [
@@ -22,8 +26,10 @@ const navLinkClass = ({ isActive }) =>
 const Header = () => {
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { totalItems } = useCart();
+  const { totalItems, cartReady } = useCart();
   const { user, isLoggedIn, logout } = useAuth();
+  const adminAuth = useAdminAuthSafe();
+  const staff = adminAuth?.staff ?? null;
   const { pathname } = useLocation();
   const categorySectionActive = pathname.startsWith("/category");
 
@@ -129,9 +135,9 @@ const Header = () => {
         </button>
        
 
-        {isLoggedIn ? (
+        {isLoggedIn && (
           <div className="flex flex-row items-center gap-3 shrink-0">
-            <span className="text-xs md:text-sm font-semibold  whitespace-nowrap text-green-600  ">
+            <span className="text-xs md:text-sm font-semibold whitespace-nowrap text-green-600">
               {user?.name || "User"}
             </span>
             <button
@@ -142,7 +148,23 @@ const Header = () => {
               Logout
             </button>
           </div>
-        ) : (
+        )}
+
+        {!isLoggedIn && staff && (
+          <div className="flex flex-row items-center gap-3 shrink-0">
+            <span className="text-xs md:text-sm font-semibold whitespace-nowrap text-[#2d6a6a]">
+              {staff.name}
+            </span>
+            <Link
+              to={staffHomePath(staff.role)}
+              className="text-xs md:text-sm font-bold text-[#2d6a6a] px-2 py-1 rounded-lg hover:bg-[#eef6f4] transition-colors whitespace-nowrap no-underline"
+            >
+              Dashboard
+            </Link>
+          </div>
+        )}
+
+        {!isLoggedIn && !staff && (
           <Link
             to="/signin"
             className="p-2 rounded-lg text-black hover:bg-black/[0.04] transition-colors"
@@ -158,9 +180,11 @@ const Header = () => {
           aria-label="Shopping cart"
         >
           <FiShoppingCart size={20} strokeWidth={2} />
-          <span className="absolute top-0.5 right-0.5 bg-[#2d6a6a] text-white text-[10px] min-w-[1.15rem] h-[1.15rem] px-0.5 rounded-full flex items-center justify-center font-bold shadow-sm">
-            {totalItems}
-          </span>
+          {cartReady && totalItems > 0 && (
+            <span className="absolute top-0.5 right-0.5 bg-[#2d6a6a] text-white text-[10px] min-w-[1.15rem] h-[1.15rem] px-0.5 rounded-full flex items-center justify-center font-bold shadow-sm">
+              {totalItems}
+            </span>
+          )}
         </Link>
       </div>
 

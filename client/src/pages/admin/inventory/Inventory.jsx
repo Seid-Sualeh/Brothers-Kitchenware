@@ -92,13 +92,16 @@ const Inventory = () => {
         <>
           <div className="row">
             <div className="col-12">
-              <div className="d-flex justify-content-between align-items-center mb-4">
+              <div className="d-flex justify-content-between align-items-center mb-4 admin-page-header">
                 <div className="m-3">
                   <h1 className="fs-3 m-3">Inventory</h1>
                   <p className="mb-0">Manage your product inventory</p>
                 </div>
-                <div>
-                  <Link to="/admin/create-product" className="btn btn-primary">
+                <div className="admin-header-actions">
+                  <Link
+                    to="/admin/create-product"
+                    className="btn btn-primary btn-sm admin-btn-compact"
+                  >
                     Add Product
                   </Link>
                 </div>
@@ -108,10 +111,10 @@ const Inventory = () => {
           <div className="row">
             <div className="col-12">
               <div>
-                <div className="d-flex gap-2 mb-3 flex-wrap justify-content-between">
+                <div className="d-flex gap-2 mb-3 flex-wrap justify-content-between admin-toolbar">
                   <input
                     type="text"
-                    className="form-control"
+                    className="form-control admin-toolbar-search"
                     placeholder="Search products..."
                     style={{ maxWidth: 250 }}
                     value={searchTerm}
@@ -120,15 +123,24 @@ const Inventory = () => {
                       setCurrentPage(1); // Reset to first page when search changes
                     }}
                   />
-                  <div className="d-flex gap-2">
-                    <button className="btn btn-outline-secondary">
-                      <IconFilter size={16} /> Filter
+                  <div className="d-flex gap-2 admin-toolbar-actions">
+                    <button
+                      type="button"
+                      className="btn btn-outline-secondary btn-sm admin-btn-compact"
+                    >
+                      <IconFilter size={14} /> Filter
                     </button>
-                    <button className="btn btn-outline-secondary">
-                      <IconFileTypeCsv size={16} /> Excel
+                    <button
+                      type="button"
+                      className="btn btn-outline-secondary btn-sm admin-btn-compact"
+                    >
+                      <IconFileTypeCsv size={14} /> Excel
                     </button>
-                    <button className="btn btn-outline-secondary">
-                      <IconFileTypePdf size={16} /> PDF
+                    <button
+                      type="button"
+                      className="btn btn-outline-secondary btn-sm admin-btn-compact"
+                    >
+                      <IconFileTypePdf size={14} /> PDF
                     </button>
                   </div>
                 </div>
@@ -223,7 +235,7 @@ const Inventory = () => {
                           aria-label="Page navigation"
                           className="d-flex justify-content-end"
                         >
-                          <ul className="pagination mb-0">
+                          <ul className="pagination pagination-sm mb-0 admin-pagination-compact">
                             <li
                               className={`page-item ${currentPage === 1 ? "disabled" : ""}`}
                             >
@@ -234,7 +246,7 @@ const Inventory = () => {
                                 }
                                 disabled={currentPage === 1}
                               >
-                                Previous
+                                Prev
                               </button>
                             </li>
                             {Array.from(
@@ -279,24 +291,8 @@ const Inventory = () => {
             <div className="col-12">
               <footer className="text-center py-2 mt-6 text-secondary ">
                 <p className="mb-0">
-                  Copyright © 2026 InApp Inventory Dashboard. Developed by{" "}
-                  <a
-                    href="https://codescandy.com/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-primary"
-                  >
-                    CodesCandy
-                  </a>{" "}
-                  • Distributed by{" "}
-                  <a
-                    href="https://themewagon.com/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-primary"
-                  >
-                    ThemeWagon
-                  </a>{" "}
+                  Copyright © Brother&apos;s Kitchenware{" "}
+                  {new Date().getFullYear()}. All rights reserved.
                 </p>
               </footer>
             </div>

@@ -20,6 +20,8 @@ const {
   getLowStock,
   confirmOrder,
   confirmMobileWalletPayment,
+  getWalletPaymentSession,
+  processWalletPayment,
   cancelOrder,
   getAdminNotifications,
   markAdminNotificationRead,
@@ -141,7 +143,7 @@ async function checkoutController(req, res) {
     }
     if (
       err.message === "Unsupported payment method" ||
-      err.message === "phone number, full name, and PIN are required"
+      err.message === "phone number and full name are required"
     ) {
       return res.status(400).json({ error: err.message });
     }
@@ -251,6 +253,71 @@ async function confirmOrderController(req, res) {
     res.json(result);
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+}
+
+async function getWalletPaymentSessionController(req, res) {
+  try {
+    const orderId = Number(req.params.id);
+    const session = await getWalletPaymentSession(
+      req.db,
+      req.user.sub,
+      orderId,
+    );
+    if (!session) {
+      return res.status(404).json({ error: "Order not found" });
+    }
+    if (session.alreadyCompleted) {
+      return res.json(session);
+    }
+    res.json(session);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+}
+
+async function processWalletPaymentController(req, res) {
+  try {
+    const orderId = Number(req.params.id);
+    const { pin } = req.body || {};
+    if (!pin) {
+      return res.status(400).json({ error: "Wallet PIN is required" });
+    }
+    const result = await processWalletPayment(req.db, req.user.sub, orderId, {
+      pin,
+    });
+    if (!result) {
+      return res.status(404).json({ error: "Order not found" });
+    }
+    if (result.alreadyCompleted) {
+      return res.json({ ok: true, ...result });
+    }
+
+    const [orows] = await req.db.query(
+      "SELECT customer_email, customer_name FROM orders WHERE id = ?",
+      [orderId],
+    );
+    const order = orows[0];
+    if (order) {
+      await sendOrderCompletedEmail({
+        to: order.customer_email,
+        name: order.customer_name,
+        orderId,
+      });
+    }
+    req.app.locals.io?.emit("order:completed", { orderId, status: "completed" });
+    res.json(result);
+  } catch (err) {
+    if (err.code === "INVALID_PIN") {
+      return res.status(401).json({ error: err.message });
+    }
+    if (err.code === "INSUFFICIENT_BALANCE") {
+      return res.status(402).json({
+        error: err.message,
+        availableBalance: err.availableBalance,
+      });
+    }
+    res.status(400).json({ error: err.message });
   }
 }
 
@@ -508,6 +575,8 @@ module.exports = {
   getLowStockController,
   confirmOrderController,
   confirmMobileWalletPaymentController,
+  getWalletPaymentSessionController,
+  processWalletPaymentController,
   cancelOrderController,
   getAdminNotificationsController,
   markAdminNotificationReadController,

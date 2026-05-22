@@ -246,7 +246,7 @@ const Dashboard = () => {
           <div className="row">
             <div className="col-12">
               <div className="m-5">
-                <div className="d-flex justify-content-between align-items-center">
+                <div className="d-flex justify-content-between align-items-center admin-page-header">
                   <div>
                     <h1 className="fs-3 mt-5">Dashboard</h1>
                     <p className="text-muted">
@@ -437,7 +437,7 @@ const Dashboard = () => {
                 {totalTopPages > 1 && (
                   <div className="card-footer bg-white px-4 py-3">
                     <nav>
-                      <ul className="pagination pagination-sm mb-0 justify-content-center">
+                      <ul className="pagination pagination-sm mb-0 justify-content-center admin-pagination-compact">
                         <li
                           className={`page-item ${topPage === 1 ? "disabled" : ""}`}
                         >
@@ -520,7 +520,7 @@ const Dashboard = () => {
                 {totalLowPages > 1 && (
                   <div className="card-footer bg-white px-4 py-3">
                     <nav>
-                      <ul className="pagination pagination-sm mb-0 justify-content-center">
+                      <ul className="pagination pagination-sm mb-0 justify-content-center admin-pagination-compact">
                         <li
                           className={`page-item ${lowPage === 1 ? "disabled" : ""}`}
                         >
@@ -644,7 +644,7 @@ const Dashboard = () => {
                 {totalRecentPages > 1 && (
                   <div className="card-footer bg-white px-4 py-3">
                     <nav>
-                      <ul className="pagination pagination-sm mb-0 justify-content-center">
+                      <ul className="pagination pagination-sm mb-0 justify-content-center admin-pagination-compact">
                         <li
                           className={`page-item ${recentPage === 1 ? "disabled" : ""}`}
                         >
@@ -691,8 +691,11 @@ const Dashboard = () => {
 
           <div className="row">
             <div className="col-12">
-              <footer className="text-center py-2 mt-6 text-secondary">
-                <p className="mb-0 small">BK Home Goods — admin dashboard</p>
+              <footer className="text-center py-2 mt-6 text-secondary ">
+                <p className="mb-0">
+                  Copyright © Brother&apos;s Kitchenware{" "}
+                  {new Date().getFullYear()}. All rights reserved.
+                </p>
               </footer>
             </div>
           </div>

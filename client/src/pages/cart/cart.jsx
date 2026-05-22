@@ -1,124 +1,157 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FiTrash2, FiMinus, FiPlus } from "react-icons/fi";
+import { FiTrash2, FiMinus, FiPlus, FiShoppingBag } from "react-icons/fi";
 import { useCart } from "../../context/CartContext";
 import { useAuth } from "../../context/AuthContext";
+import CheckoutSteps from "../../components/ecommerce/CheckoutSteps.jsx";
+import CurrencyFormat from "../../components/CurrencyFormat/CurrencyFormat";
 
 const Cart = () => {
-  const { cart, removeFromCart, updateQuantity, totalPrice } = useCart();
+  const { cart, removeFromCart, updateQuantity, totalPrice, cartReady } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
 
+  const handleCheckout = () => {
+    if (!user) {
+      navigate("/signin", {
+        state: {
+          msg: "Sign in to complete your purchase",
+          redirect: "/payment",
+        },
+      });
+      return;
+    }
+    navigate("/payment");
+  };
+
+  if (!cartReady) {
+    return (
+      <div className="min-h-[50vh] flex items-center justify-center bg-[#FAF9F6]">
+        <div className="w-8 h-8 border-2 border-[#2d6a6a] border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
   if (cart.length === 0) {
     return (
-      <div className="min-h-screen bg-white flex flex-col items-center justify-center py-20">
-        <h1 className="text-4xl font-serif uppercase mb-4">
+      <div className="min-h-screen bg-[#FAF9F6] flex flex-col items-center justify-center py-20 px-6">
+        <div className="w-16 h-16 rounded-full bg-[#eef6f4] flex items-center justify-center text-[#2d6a6a] mb-6">
+          <FiShoppingBag size={28} />
+        </div>
+        <h1 className="font-display text-3xl font-bold text-gray-900 mb-3">
           Your cart is empty
         </h1>
-        <p className="text-gray-500 mb-8">
-          Looks like you haven't added anything yet.
+        <p className="text-gray-600 mb-8 text-center max-w-sm">
+          Browse our kitchenware collection and add items you love.
         </p>
         <Link
           to="/shop"
-          className="bg-teal-600 text-white px-8 py-3 font-bold uppercase tracking-widest hover:bg-gray-900 transition"
+          className="inline-flex items-center justify-center rounded-full bg-[#2d6a6a] text-white px-8 py-3.5 text-sm font-bold uppercase tracking-widest hover:bg-[#245a5a] transition-colors no-underline"
         >
-          Continue Shopping
+          Continue shopping
         </Link>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <h1 className="text-3xl sm:text-4xl font-serif uppercase mb-8 text-center sm:text-left">
-          Shopping Cart
+    <div className="min-h-screen bg-[#FAF9F6]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <CheckoutSteps current="cart" />
+
+        <h1 className="font-display text-3xl sm:text-4xl font-bold text-gray-900 mb-8">
+          Shopping cart
         </h1>
 
         <div className="grid gap-8 lg:grid-cols-3">
-          <div className="order-last lg:order-none lg:col-span-2">
-            <div className="border border-gray-100 rounded-3xl overflow-hidden">
-              {cart.map((item) => (
-                <div
-                  key={item.id}
-                  className="flex flex-col sm:flex-row sm:items-center gap-5 p-5 sm:p-6 border-b border-gray-100 last:border-0"
-                >
-                  <div className="w-full sm:w-28 h-28 bg-gray-50 rounded-3xl flex items-center justify-center overflow-hidden">
-                    <img
-                      src={item.image_url}
-                      alt={item.name}
-                      className="w-full h-full object-contain"
-                    />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-gray-800 uppercase text-base sm:text-sm mb-2 truncate">
-                      {item.name}
-                    </h3>
-                    <p className="text-teal-600 font-serif text-lg sm:text-base">
-                      ${item.price.toFixed(2)}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2 sm:gap-3">
-                    <button
-                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                      className="w-10 h-10 rounded-full border border-gray-200 hover:border-teal-600 transition flex items-center justify-center"
-                    >
-                      <FiMinus size={16} />
-                    </button>
-                    <span className="w-10 text-center font-bold text-base">
-                      {item.quantity}
-                    </span>
-                    <button
-                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                      className="w-10 h-10 rounded-full border border-gray-200 hover:border-teal-600 transition flex items-center justify-center"
-                    >
-                      <FiPlus size={16} />
-                    </button>
-                  </div>
+          <div className="lg:col-span-2 space-y-4">
+            {cart.map((item) => (
+              <div
+                key={item.id}
+                className="flex flex-col sm:flex-row sm:items-center gap-5 p-5 sm:p-6 bg-white border border-gray-100 rounded-2xl shadow-sm"
+              >
+                <div className="w-full sm:w-28 h-28 bg-[#FAF9F6] rounded-xl flex items-center justify-center overflow-hidden shrink-0">
+                  <img
+                    src={item.image_url}
+                    alt={item.name}
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-semibold text-gray-900 mb-1 truncate">
+                    {item.name}
+                  </h3>
+                  <p className="text-[#2d6a6a] font-semibold">
+                    <CurrencyFormat amount={item.price} />
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
                   <button
-                    onClick={() => removeFromCart(item.id)}
-                    className="text-gray-400 hover:text-red-500 transition self-start sm:self-auto"
-                    aria-label={`Remove ${item.name}`}
+                    type="button"
+                    onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                    className="w-9 h-9 rounded-full border border-gray-200 hover:border-[#2d6a6a] transition flex items-center justify-center"
+                    aria-label="Decrease quantity"
                   >
-                    <FiTrash2 size={20} />
+                    <FiMinus size={14} />
+                  </button>
+                  <span className="w-8 text-center font-semibold text-sm">
+                    {item.quantity}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                    className="w-9 h-9 rounded-full border border-gray-200 hover:border-[#2d6a6a] transition flex items-center justify-center"
+                    aria-label="Increase quantity"
+                  >
+                    <FiPlus size={14} />
                   </button>
                 </div>
-              ))}
-            </div>
+                <button
+                  type="button"
+                  onClick={() => removeFromCart(item.id)}
+                  className="text-gray-400 hover:text-red-500 transition self-start sm:self-center"
+                  aria-label={`Remove ${item.name}`}
+                >
+                  <FiTrash2 size={18} />
+                </button>
+              </div>
+            ))}
           </div>
 
           <div className="lg:col-span-1">
-            <div className="bg-gray-50 rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 lg:sticky lg:top-24">
-              <h3 className="font-bold uppercase text-sm tracking-widest mb-6">
-                Order Summary
-              </h3>
-              <div className="flex justify-between mb-4 text-gray-600">
+            <div className="bg-white rounded-2xl p-6 sm:p-8 border border-gray-100 shadow-sm lg:sticky lg:top-24">
+              <h2 className="font-bold uppercase text-xs tracking-widest text-gray-500 mb-6">
+                Order summary
+              </h2>
+              <div className="flex justify-between mb-3 text-gray-600 text-sm">
                 <span>Subtotal</span>
-                <span>${totalPrice.toFixed(2)}</span>
+                <span>
+                  <CurrencyFormat amount={totalPrice} />
+                </span>
               </div>
-              <div className="flex justify-between mb-4 text-gray-600">
+              <div className="flex justify-between mb-4 text-gray-600 text-sm">
                 <span>Shipping</span>
-                <span>Free</span>
+                <span className="text-emerald-700 font-medium">Free</span>
               </div>
-              <div className="flex justify-between pt-4 border-t border-gray-200 font-bold text-lg">
+              <div className="flex justify-between pt-4 border-t border-gray-200 font-bold text-lg text-gray-900">
                 <span>Total</span>
-                <span>${totalPrice.toFixed(2)}</span>
+                <span>
+                  <CurrencyFormat amount={totalPrice} />
+                </span>
               </div>
               <button
                 type="button"
-                className="w-full bg-teal-600 text-white py-4 font-bold uppercase tracking-widest mt-6 hover:bg-gray-900 transition rounded-3xl"
-                onClick={() => {
-                  if (!user) {
-                    navigate("/signin", {
-                      state: { msg: "Sign in to checkout", redirect: "/cart" },
-                    });
-                    return;
-                  }
-                  navigate("/payment");
-                }}
+                onClick={handleCheckout}
+                className="w-full mt-6 rounded-xl bg-[#2a2a2a] text-white py-3.5 font-bold uppercase tracking-widest text-sm hover:bg-black transition-colors"
               >
-                Proceed to Checkout
+                Proceed to checkout
               </button>
+              <Link
+                to="/shop"
+                className="block text-center mt-4 text-sm text-[#2d6a6a] font-medium hover:underline no-underline"
+              >
+                Continue shopping
+              </Link>
             </div>
           </div>
         </div>

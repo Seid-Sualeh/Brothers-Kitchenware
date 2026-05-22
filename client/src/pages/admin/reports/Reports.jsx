@@ -90,7 +90,7 @@ const Reports = () => {
         <>
           <div className="row">
             <div className="col-12">
-              <div className="d-flex justify-content-between align-items-center mb-4">
+              <div className="d-flex justify-content-between align-items-center mb-4 admin-page-header">
                 <div className="m-3">
                   <h1 className="fs-3 mt-3">Reports</h1>
                   <p className="mb-0">Financial metrics from the database</p>
@@ -102,7 +102,7 @@ const Reports = () => {
                 </div>
                 <button
                   type="button"
-                  className="btn btn-sm btn-outline-primary me-3"
+                  className="btn btn-sm btn-outline-primary me-3 admin-btn-compact"
                   onClick={load}
                 >
                   Refresh
@@ -206,7 +206,7 @@ const Reports = () => {
                   {totalTopPages > 1 && (
                     <div className="card-footer bg-white px-4 py-3">
                       <nav>
-                        <ul className="pagination pagination-sm mb-0 justify-content-center">
+                        <ul className="pagination pagination-sm mb-0 justify-content-center admin-pagination-compact">
                           <li
                             className={`page-item ${topPage === 1 ? "disabled" : ""}`}
                           >
@@ -249,6 +249,17 @@ const Reports = () => {
                   )}
                 </div>
               </div>
+            </div>
+          </div>
+
+          <div className="row">
+            <div className="col-12">
+              <footer className="text-center py-2 mt-6 text-secondary ">
+                <p className="mb-0">
+                  Copyright © Brother&apos;s Kitchenware{" "}
+                  {new Date().getFullYear()}. All rights reserved.
+                </p>
+              </footer>
             </div>
           </div>
         </>
