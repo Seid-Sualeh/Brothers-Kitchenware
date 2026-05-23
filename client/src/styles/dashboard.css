@@ -615,7 +615,9 @@ body.admin-mobile-menu-open {
 }
 
 @media (max-width: 575.98px) {
-  #content .pagination .page-item:not(.active):not(:first-child):not(:last-child) {
+  #content
+    .pagination
+    .page-item:not(.active):not(:first-child):not(:last-child) {
     display: none;
   }
 

@@ -4,6 +4,7 @@ import { IconEye, IconEyeOff } from "@tabler/icons-react";
 import { useAdminAuth } from "../../../context/AdminAuthContext";
 import { adminApi } from "../../../lib/adminApi.js";
 import { showSuccessToast, showErrorToast } from "../../../lib/toast.js";
+import logo from "../../../asset/images/logo3.png";
 
 export default function AdminSignIn() {
   const [email, setEmail] = useState("");
@@ -19,13 +20,18 @@ export default function AdminSignIn() {
     e.preventDefault();
     setLoading(true);
     try {
-      const { data } = await adminApi.post("/api/admin/auth/login", { email, password });
+      const { data } = await adminApi.post("/api/admin/auth/login", {
+        email,
+        password,
+      });
       adminLogin(data.user, data.token);
       showSuccessToast("Signed in successfully!");
       if (data.user.role === "employee") {
         navigate("/admin/inventory", { replace: true });
       } else {
-        navigate(from === "/admin/signin" ? "/admin/dashboard" : from, { replace: true });
+        navigate(from === "/admin/signin" ? "/admin/dashboard" : from, {
+          replace: true,
+        });
       }
     } catch (err) {
       showErrorToast(err.response?.data?.error || "Sign in failed.");
@@ -39,13 +45,21 @@ export default function AdminSignIn() {
       <div className="card shadow-sm" style={{ maxWidth: 420, width: "100%" }}>
         <div className="card-body p-4 p-md-5">
           <div className="text-center mb-4">
-            <Link to="/" className="text-decoration-none">
-              <span className="fs-2 fw-bold font-serif text-dark">
-                B<span className="text-success">K</span>
-              </span>
+            <Link
+              to="/"
+              className="d-inline-flex justify-content-center mx-auto"
+            >
+              <img
+                src={logo}
+                alt="Brothers Home Goods logo"
+                width="80"
+                height="40"
+              />
             </Link>
             <h1 className="h5 mt-3 mb-0">Staff sign in</h1>
-            <p className="text-muted small mt-2 mb-0">Admin and employee accounts only.</p>
+            <p className="text-muted small mt-2 mb-0">
+              Admin and employee accounts only.
+            </p>
           </div>
           <form onSubmit={submit}>
             <div className="mb-3">
@@ -70,12 +84,21 @@ export default function AdminSignIn() {
                   required
                   autoComplete="current-password"
                 />
-                <button type="button" className="btn btn-outline-secondary" onClick={() => setShow(!show)} aria-label="Toggle password">
+                <button
+                  type="button"
+                  className="btn btn-outline-secondary"
+                  onClick={() => setShow(!show)}
+                  aria-label="Toggle password"
+                >
                   {show ? <IconEyeOff size={18} /> : <IconEye size={18} />}
                 </button>
               </div>
             </div>
-            <button type="submit" className="btn btn-dark w-100 py-2" disabled={loading}>
+            <button
+              type="submit"
+              className="btn btn-dark w-100 py-2"
+              disabled={loading}
+            >
               {loading ? "Signing in…" : "Sign in"}
             </button>
           </form>

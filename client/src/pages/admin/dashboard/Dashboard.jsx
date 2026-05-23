@@ -13,6 +13,7 @@ import {
   IconAlertCircle,
 } from "@tabler/icons-react";
 import { adminApi } from "../../../lib/adminApi.js";
+import logo from "../../../asset/images/logo3.png";
 import { useAdminAuth } from "../../../context/AdminAuthContext.jsx";
 import { useSocket } from "../../../context/SocketContext.jsx";
 import { DashboardLayout } from "../../../components/dashboard/layout/DashboardLayout";
@@ -215,7 +216,7 @@ const Dashboard = () => {
       ]
     : [];
 
-  const placeholderImg = "https://placehold.co/64x64/e2e8e0/1e293b?text=BK";
+  const placeholderImg = logo;
 
   const displayedRecent = recent.slice(
     (recentPage - 1) * itemsPerPage,

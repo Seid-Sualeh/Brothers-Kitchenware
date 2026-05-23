@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { FiPhone, FiMail, FiClock } from "react-icons/fi";
 import { Helmet } from "react-helmet-async";
 import { api } from "../../lib/api.js";
+import logo from "../../asset/images/logo3.png";
 
 const MAP_EMBED_ADDIS =
   "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31307.19098838402!2d39.043316614055314!3d11.232040336625916!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1646f42f81fd2757%3A0x92d3818696152876!2sMasha%20Wollo!5e0!3m2!1sen!2set!4v1776537242747!5m2!1sen!2set";
@@ -91,11 +92,17 @@ const Contact = () => {
                 referrerPolicy="no-referrer-when-downgrade"
               />
               <div
-                className="pointer-events-none absolute left-1/2 top-[42%] z-10 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-white/90 text-sm font-display font-black text-white shadow-lg"
+                className="pointer-events-none absolute left-1/2 top-[42%] z-10 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-white/90 bg-white shadow-lg"
                 style={{ backgroundColor: ACCENT }}
                 aria-hidden
               >
-                B<span className="opacity-95">K</span>
+                <img
+                  src={logo}
+                  alt="Brothers Home Goods logo"
+                  width="28"
+                  height="28"
+                  className="rounded-full"
+                />
               </div>
             </div>
           </div>

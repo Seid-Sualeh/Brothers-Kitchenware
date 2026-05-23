@@ -9,6 +9,7 @@ import {
 import { DashboardLayout } from "../../../components/dashboard/layout/DashboardLayout";
 import { adminApi } from "../../../lib/adminApi.js";
 import Loader from "../../../components/Loader/Loader";
+import logo from "../../../asset/images/logo3.png";
 
 const money = (n) =>
   `$${Number(n || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -72,7 +73,7 @@ const Reports = () => {
       ]
     : [];
 
-  const placeholder = "https://placehold.co/48x48/e2e8e0/1e293b?text=BK";
+  const placeholder = logo;
 
   const displayedTop = topProducts.slice(
     (topPage - 1) * itemsPerPage,

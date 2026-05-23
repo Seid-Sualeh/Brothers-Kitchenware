@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { IconEye, IconEyeOff } from "@tabler/icons-react";
 import { useAuth } from "../../context/AuthContext";
 import { api } from "../../lib/api.js";
-import AuthPageLayout from "../../components/ecommerce/AuthPageLayout.jsx";
+import logo from "../../asset/images/logo3.png";
 
 const inputClass =
   "w-full rounded-xl border border-gray-200 px-4 py-3 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#2d6a6a]/30 focus:border-[#2d6a6a]";
@@ -58,49 +58,43 @@ const SignIn = () => {
   };
 
   return (
-    <AuthPageLayout
-      title="Welcome back"
-      subtitle="Sign in to checkout, pay, and view your orders."
-      footer={
-        <>
-          <p className="text-sm text-gray-600 mb-2">
-            New here?{" "}
-            <Link
-              to="/signup"
-              state={location.state}
-              className="font-semibold text-[#2d6a6a] hover:underline"
-            >
-              Create an account
-            </Link>
-          </p>
-          <p className="text-xs text-gray-500">
-            Staff?{" "}
-            <Link to="/admin/signin" className="text-[#2d6a6a] hover:underline">
-              Admin sign in
-            </Link>
-          </p>
-        </>
-      }
-    >
-      {redirectMsg && (
-        <div
-          className="mb-5 p-3 rounded-xl bg-[#eef6f4] text-[#1a4d4d] text-sm border border-[#8fbab5]/40"
-          role="status"
-        >
-          {redirectMsg}
-        </div>
-      )}
+    <div className="min-h-screen bg-[#FAF9F6] flex flex-col">
+      {/*  */}
 
-      {error && (
-        <div
-          className="mb-5 p-3 rounded-xl bg-red-50 text-red-800 text-sm border border-red-100"
-          role="alert"
-        >
-          {error}
-        </div>
-      )}
+      <main className="flex-1 flex items-center justify-center px-4 py-10 sm:py-14">
+        <div className="w-full max-w-md">
+          <div className="flex justify-center mb-6">
+            <Link to="/" className="inline-flex items-center justify-center" aria-label="Go to homepage">
+              <img src={logo} alt="Brothers Home Goods logo" width="80" height="40" />
+            </Link>
+          </div>
+          <div className="text-center mb-8">
+            <h1 className="font-display text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+              Welcome back
+            </h1>
+            <p className="text-gray-600 text-sm sm:text-base">Sign in to checkout, pay, and view your orders.</p>
+          </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8">
+            {redirectMsg && (
+              <div
+                className="mb-5 p-3 rounded-xl bg-[#eef6f4] text-[#1a4d4d] text-sm border border-[#8fbab5]/40"
+                role="status"
+              >
+                {redirectMsg}
+              </div>
+            )}
+
+            {error && (
+              <div
+                className="mb-5 p-3 rounded-xl bg-red-50 text-red-800 text-sm border border-red-100"
+                role="alert"
+              >
+                {error}
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1.5">
             Email
@@ -164,12 +158,24 @@ const SignIn = () => {
         </button>
       </form>
 
-      <p className="text-center mt-4 mb-0">
-        <Link to="/terms-policy" className="text-sm text-gray-500 hover:text-[#2d6a6a]">
-          Terms & policy
-        </Link>
-      </p>
-    </AuthPageLayout>
+            <p className="text-center mt-4 mb-0">
+              <Link to="/terms-policy" className="text-sm text-gray-500 hover:text-[#2d6a6a]">
+                Terms & policy
+              </Link>
+            </p>
+          </div>
+
+          <div className="mt-6 text-center text-sm text-gray-600">
+            <p className="mb-2">
+              New here? <Link to="/signup" state={location.state} className="font-semibold text-[#2d6a6a] hover:underline">Create an account</Link>
+            </p>
+            <p className="text-xs text-gray-500">
+              Staff? <Link to="/admin/signin" className="text-[#2d6a6a] hover:underline">Admin sign in</Link>
+            </p>
+          </div>
+        </div>
+      </main>
+    </div>
   );
 };
 

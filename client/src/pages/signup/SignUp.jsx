@@ -4,7 +4,7 @@ import { IconEye, IconEyeOff } from "@tabler/icons-react";
 import { useAuth } from "../../context/AuthContext";
 import { api } from "../../lib/api.js";
 import { showSuccessToast } from "../../lib/toast.js";
-import AuthPageLayout from "../../components/ecommerce/AuthPageLayout.jsx";
+import logo from "../../asset/images/logo3.png";
 
 const inputClass =
   "w-full rounded-xl border border-gray-200 px-4 py-3 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#2d6a6a]/30 focus:border-[#2d6a6a]";
@@ -78,32 +78,34 @@ const SignUp = () => {
   };
 
   return (
-    <AuthPageLayout
-      title="Create your account"
-      subtitle="Join Brothers Kitchenware to checkout and track orders."
-      footer={
-        <p className="text-sm text-gray-600">
-          Already have an account?{" "}
-          <Link
-            to="/signin"
-            state={location.state}
-            className="font-semibold text-[#2d6a6a] hover:underline"
-          >
-            Sign in
-          </Link>
-        </p>
-      }
-    >
-      {error && (
-        <div
-          className="mb-5 p-3 rounded-xl bg-red-50 text-red-800 text-sm border border-red-100"
-          role="alert"
-        >
-          {error}
-        </div>
-      )}
+    <div className="min-h-screen bg-[#FAF9F6] flex flex-col">
+      
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <main className="flex-1 flex items-center justify-center px-4 py-10 sm:py-14">
+        <div className="w-full max-w-md">
+          <div className="flex justify-center mb-6">
+            <Link to="/" className="inline-flex items-center justify-center" aria-label="Go to homepage">
+              <img src={logo} alt="Brothers Home Goods logo" width="80" height="40" />
+            </Link>
+          </div>
+          <div className="text-center mb-8">
+            <h1 className="font-display text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+              Create your account
+            </h1>
+            <p className="text-gray-600 text-sm sm:text-base">Join Brothers Kitchenware to checkout and track orders.</p>
+          </div>
+
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8">
+            {error && (
+              <div
+                className="mb-5 p-3 rounded-xl bg-red-50 text-red-800 text-sm border border-red-100"
+                role="alert"
+              >
+                {error}
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-1.5">
             Full name
@@ -208,7 +210,16 @@ const SignUp = () => {
           {loading ? "Creating account…" : "Create account"}
         </button>
       </form>
-    </AuthPageLayout>
+    </div>
+
+    <div className="mt-6 text-center text-sm text-gray-600">
+      <p>
+        Already have an account? <Link to="/signin" state={location.state} className="font-semibold text-[#2d6a6a] hover:underline">Sign in</Link>
+      </p>
+    </div>
+  </div>
+</main>
+</div>
   );
 };
 
