@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import './header.css'
+import "./header.css";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import {
   FiSearch,
@@ -13,6 +13,7 @@ import { useCart } from "../../../context/CartContext";
 import { useAuth } from "../../../context/AuthContext";
 import { useAdminAuthSafe } from "../../../context/AdminAuthContext";
 import { STORE_CATEGORIES } from "../../../constants/storeCategories.js";
+import logo from "../../../asset/images/logo3.png";
 
 const staffHomePath = (role) =>
   role === "employee" ? "/admin/inventory" : "/admin/dashboard";
@@ -42,10 +43,10 @@ const Header = () => {
     <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200/90 px-4 md:px-12 py-4 flex justify-between items-center gap-4">
       <Link
         to="/"
-        className="text-2xl md:text-3xl font-display font-black text-[#1a1f1e] tracking-tight shrink-0 hover:opacity-90 transition-opacity"
+        className="inline-flex items-center text-2xl md:text-3xl font-display font-black tracking-tight shrink-0 hover:opacity-90 transition-opacity"
         aria-label="Brothers Home Goods home"
       >
-        B<span className="text-[#2d6a6a]">K</span>
+        <img src={logo} alt="Brothers Home Goods logo" width="80" height="50" />
       </Link>
 
       <button
@@ -133,7 +134,6 @@ const Header = () => {
         >
           <FiSearch size={20} strokeWidth={2} />
         </button>
-       
 
         {isLoggedIn && (
           <div className="flex flex-row items-center gap-3 shrink-0">
@@ -157,7 +157,7 @@ const Header = () => {
             </span>
             <Link
               to={staffHomePath(staff.role)}
-              className="text-xs md:text-sm font-bold text-[#2d6a6a] px-2 py-1 rounded-lg hover:bg-[#eef6f4] transition-colors whitespace-nowrap no-underline"
+              className="text-xs md:text-sm font-bold text-white px-2 py-1 rounded-lg bg-[#2d6a6a] transition-colors whitespace-nowrap no-underline"
             >
               Dashboard
             </Link>

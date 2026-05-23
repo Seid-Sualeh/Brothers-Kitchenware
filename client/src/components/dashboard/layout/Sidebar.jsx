@@ -10,6 +10,7 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import { useAdminAuth } from "../../../context/AdminAuthContext";
+import logo from "../../../asset/images/logo3.png";
 
 const ALL_NAV = [
   {
@@ -85,7 +86,11 @@ export const Sidebar = ({ collapsed, mobileOpen, isMobile, onClose }) => {
     .join(" ");
 
   return (
-    <aside id="sidebar" className={sidebarClass} aria-hidden={isMobile && !mobileOpen}>
+    <aside
+      id="sidebar"
+      className={sidebarClass}
+      aria-hidden={isMobile && !mobileOpen}
+    >
       <div className="logo-area">
         <button
           type="button"
@@ -93,9 +98,12 @@ export const Sidebar = ({ collapsed, mobileOpen, isMobile, onClose }) => {
           aria-label="Brothers Home Goods home"
           onClick={goToStoreHome}
         >
-          <span className="sidebar-brand">
-            B<span className="sidebar-brand-accent">K</span>
-          </span>
+          <img
+            src={logo}
+            alt="Brothers Home Goods logo"
+            width="80"
+            height="50"
+          />
           <span className="sidebar-brand-sub d-md-none">Admin</span>
         </button>
         {isMobile && (
