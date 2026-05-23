@@ -317,10 +317,9 @@ html {
 .sidebar-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 1040;
+  z-index: 1020;
   border: none;
   background: rgba(23, 23, 23, 0.45);
-  backdrop-filter: blur(2px);
   animation: admin-fade-in 0.2s ease;
 }
 
