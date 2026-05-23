@@ -317,10 +317,9 @@ html {
 .sidebar-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 1040;
+  z-index: 1020;
   border: none;
   background: rgba(23, 23, 23, 0.45);
-  backdrop-filter: blur(2px);
   animation: admin-fade-in 0.2s ease;
 }
 
@@ -445,6 +444,7 @@ body.admin-mobile-menu-open {
 
   .sidebar.sidebar-mobile.mobile-open {
     transform: translateX(0);
+    z-index: 1045;
     box-shadow: 8px 0 32px rgba(0, 0, 0, 0.12);
     animation: admin-slide-in 0.28s cubic-bezier(0.4, 0, 0.2, 1);
   }
