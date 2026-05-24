@@ -78,7 +78,7 @@ const SignUp = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF9F6] flex flex-col">
+    <div className="min-h-screen bg-[#fff] flex flex-col">
       
 
       <main className="flex-1 flex items-center justify-center px-4 py-10 sm:py-14">
@@ -95,7 +95,7 @@ const SignUp = () => {
             <p className="text-gray-600 text-sm sm:text-base">Join Brothers Kitchenware to checkout and track orders.</p>
           </div>
 
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8">
+          <div className="bg-[#FAF9Ff] rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8">
             {error && (
               <div
                 className="mb-5 p-3 rounded-xl bg-red-50 text-red-800 text-sm border border-red-100"

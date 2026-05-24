@@ -58,7 +58,7 @@ const SignIn = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF9F6] flex flex-col">
+    <div className="min-h-screen bg-[#fff] flex flex-col">
       {/*  */}
 
       <main className="flex-1 flex items-center justify-center px-4 py-10 sm:py-14">
@@ -75,7 +75,7 @@ const SignIn = () => {
             <p className="text-gray-600 text-sm sm:text-base">Sign in to checkout, pay, and view your orders.</p>
           </div>
 
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8">
+          <div className="bg-[#FAF9Ff] rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8">
             {redirectMsg && (
               <div
                 className="mb-5 p-3 rounded-xl bg-[#eef6f4] text-[#1a4d4d] text-sm border border-[#8fbab5]/40"
